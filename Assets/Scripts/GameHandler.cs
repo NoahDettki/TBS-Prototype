@@ -15,6 +15,8 @@ public class GameHandler : MonoBehaviour
     public static GameState State { get; private set; }
 
     public HexGrid grid;
+    [HideInInspector]
+    public HexCell focusedCell;
 
     public void Awake() {
         // Singleton pattern
@@ -26,6 +28,7 @@ public class GameHandler : MonoBehaviour
         }
         // Initialize
         State = GameState.MENU;
+        focusedCell = null;
     }
 
     public void StartNewGame() {
