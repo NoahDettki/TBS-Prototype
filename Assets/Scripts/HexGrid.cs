@@ -33,5 +33,7 @@ public class HexGrid : MonoBehaviour
         cell.transform.SetParent(transform, false);
         cell.transform.localPosition = position;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+        // As long as I don't have a better algorithm, cells will just get a random type
+        cell.SetRandomType();
     }
 }

@@ -33,6 +33,6 @@ public class GameHandler : MonoBehaviour
 
     public void StartNewGame() {
         State = GameState.PREPARING;
-        grid.GenerateGrid(6, 6);
+        grid.GenerateGrid(30, 30);
     }
 }
