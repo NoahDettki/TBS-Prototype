@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class GameHandler : MonoBehaviour
-{
+public class GameHandler : MonoBehaviour {
     // Singleton pattern
     public static GameHandler game;
 
@@ -13,6 +10,15 @@ public class GameHandler : MonoBehaviour
         INGAME
     }
     public static GameState State { get; private set; }
+
+    public enum Building {
+        NONE,
+        LUMBERMILL,
+        QUARRY,
+        WINDMILL,
+        GRAIN
+    }
+    public Building building;
 
     public HexGrid grid;
     public int gridRings;
@@ -29,11 +35,13 @@ public class GameHandler : MonoBehaviour
         }
         // Initialize
         State = GameState.MENU;
+        building = Building.NONE;
         focusedCell = null;
     }
 
     public void StartNewGame() {
         State = GameState.PREPARING;
         grid.GenerateCenteredGrid(gridRings);
+        State = GameState.INGAME;
     }
 }

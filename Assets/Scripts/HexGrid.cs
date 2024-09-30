@@ -54,7 +54,7 @@ public class HexGrid : MonoBehaviour {
 
         // Instantiating prefab
         //HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
-        print(x + " " + z + " => " + (x + ringCount) + " " + (z + ringCount));
+        //print(x + " " + z + " => " + (x + ringCount) + " " + (z + ringCount));
         HexCell cell = cells[x + ringCount, z + ringCount] = Instantiate<HexCell>(cellPrefab);
         cell.transform.SetParent(transform, false);
         cell.transform.localPosition = position;

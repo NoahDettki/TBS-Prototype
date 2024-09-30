@@ -6,13 +6,20 @@ using UnityEngine.UIElements;
 public class MenuHandler : MonoBehaviour
 {
     public GameObject mainMenu;
+    public GameObject hud;
     public GameObject pauseMenu;
+
+    public void Awake() {
+        mainMenu.SetActive(true);
+        hud.SetActive(false);
+    }
 
     public void NewGame() {
         // Prepare Map
         GameHandler.game.StartNewGame();
 
         // Hide menu
+        hud.SetActive(true);
         mainMenu.SetActive(false);
     }
 
@@ -25,5 +32,13 @@ public class MenuHandler : MonoBehaviour
         #else
             Application.Quit();
         #endif
+    }
+
+    public void SelectInBuildMenu(int buildingID) {
+        GameHandler.Building building = (GameHandler.Building)buildingID;
+        if (building == GameHandler.game.building) return;
+
+        GameHandler.game.building = building;
+        print("Player selected " + building);
     }
 }

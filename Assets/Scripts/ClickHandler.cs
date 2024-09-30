@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 public class ClickHandler : MonoBehaviour
 {
@@ -60,9 +61,14 @@ public class ClickHandler : MonoBehaviour
     }
 
     private void LeftClick(Vector3 mousePosition) {
+        // Prevent the player from clicking cells through UI elements
+        if (EventSystem.current.IsPointerOverGameObject()) {
+            return;
+        }
+        // Check if and what cell was clicked
         Ray ray = cam.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit)) {
-            print(hit.collider.tag);
+            //print(hit.collider.tag);
             switch (hit.collider.tag) {
                 case "Terrain":
                     HexCell cell = hit.collider.GetComponentInParent<HexCell>();
