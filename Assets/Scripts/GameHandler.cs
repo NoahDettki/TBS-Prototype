@@ -15,6 +15,7 @@ public class GameHandler : MonoBehaviour
     public static GameState State { get; private set; }
 
     public HexGrid grid;
+    public int gridRings;
     [HideInInspector]
     public HexCell focusedCell;
 
@@ -33,6 +34,6 @@ public class GameHandler : MonoBehaviour
 
     public void StartNewGame() {
         State = GameState.PREPARING;
-        grid.GenerateGrid(30, 30);
+        grid.GenerateCenteredGrid(gridRings);
     }
 }

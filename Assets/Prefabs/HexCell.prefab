@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab_forest: {fileID: 919132149155446097, guid: d649b4515b0d05b4ab184bfcb3e33eff, type: 3}
   prefab_mountains: {fileID: 919132149155446097, guid: ea8eb529035595046863e31b0882e79e, type: 3}
+  prefab_castle: {fileID: 919132149155446097, guid: 484111a4b91a6884a8e9fa59bb5f4662, type: 3}
   coordinates:
     x: 0
     z: 0

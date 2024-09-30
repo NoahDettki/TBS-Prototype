@@ -3,6 +3,7 @@ using UnityEngine;
 public class HexCell : MonoBehaviour {
     public enum Type { MEADOW, FOREST, MOUNTAINS }
     public GameObject prefab_forest, prefab_mountains;
+    public GameObject prefab_castle;
     public HexCoordinates coordinates;
 
     private Type type;
@@ -29,6 +30,10 @@ public class HexCell : MonoBehaviour {
                 Instantiate(prefab_mountains, transform.GetChild(0).position, rotation, transform.GetChild(0));
                 break;
         }
+    }
+
+    public void SetCastle() {
+        Instantiate(prefab_castle, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
     }
 
     public void Click() {
