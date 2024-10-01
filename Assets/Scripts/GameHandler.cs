@@ -11,14 +11,7 @@ public class GameHandler : MonoBehaviour {
     }
     public static GameState State { get; private set; }
 
-    public enum Building {
-        NONE,
-        LUMBERMILL,
-        QUARRY,
-        WINDMILL,
-        GRAIN
-    }
-    public Building building;
+    public HexCell.Building building;
 
     public HexGrid grid;
     public int gridRings;
@@ -35,7 +28,7 @@ public class GameHandler : MonoBehaviour {
         }
         // Initialize
         State = GameState.MENU;
-        building = Building.NONE;
+        building = HexCell.Building.NONE;
         focusedCell = null;
     }
 

@@ -35,7 +35,7 @@ public class MenuHandler : MonoBehaviour
     }
 
     public void SelectInBuildMenu(int buildingID) {
-        GameHandler.Building building = (GameHandler.Building)buildingID;
+        HexCell.Building building = (HexCell.Building)buildingID;
         if (building == GameHandler.game.building) return;
 
         GameHandler.game.building = building;

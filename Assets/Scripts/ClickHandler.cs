@@ -48,7 +48,7 @@ public class ClickHandler : MonoBehaviour
         if (mouse.rightButton.wasReleasedThisFrame) {
             // Right mouse CLICK
             if (mouseDownTimer < 0.2f) {
-                GameHandler.game.building = GameHandler.Building.NONE;
+                GameHandler.game.building = HexCell.Building.NONE;
                 EventSystem.current.SetSelectedGameObject(null);
                 RemoveBuildingAid();
             }
@@ -59,7 +59,7 @@ public class ClickHandler : MonoBehaviour
             mouseDownTimer += Time.deltaTime;
         }
         // Build menu
-        if (GameHandler.game.building != GameHandler.Building.NONE) {
+        if (GameHandler.game.building != HexCell.Building.NONE) {
             SetBuildingAid(thisMousePos);
         }
     }
@@ -120,7 +120,7 @@ public class ClickHandler : MonoBehaviour
             
             HexCell cell = hit.collider.GetComponentInParent<HexCell>();
             // Only show building aid on valid cells
-            if (cell.GetCellType() != HexCell.Type.FOREST && cell.GetCellType() != HexCell.Type.MEADOW) {
+            if (!cell.CanBuild(GameHandler.game.building)) {
                 if (buildingAid.activeInHierarchy) RemoveBuildingAid();
                 return;
             }

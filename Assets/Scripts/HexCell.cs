@@ -2,11 +2,13 @@ using UnityEngine;
 
 public class HexCell : MonoBehaviour {
     public enum Type { MEADOW, FOREST, MOUNTAINS }
+    public enum Building { NONE, CASTLE, SAWMILL, QUARRY, WINDMILL, GRAIN }
     public GameObject prefab_forest, prefab_mountains;
     public GameObject prefab_castle;
     public HexCoordinates coordinates;
 
     private Type type;
+    private Building building;
     private Animator animator;
 
     private void Awake() {
@@ -32,8 +34,23 @@ public class HexCell : MonoBehaviour {
         }
     }
 
+    public bool CanBuild(Building b) {
+        // Can only build on empty cells
+        if (building != Building.NONE) return false;
+
+        switch (b) {
+            case Building.SAWMILL:
+                if (type == Type.MOUNTAINS) return false;
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
     public void SetCastle() {
         Instantiate(prefab_castle, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
+        building = Building.CASTLE;
     }
 
     public void Focus() {
