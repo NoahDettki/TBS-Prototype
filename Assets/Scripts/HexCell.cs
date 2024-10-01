@@ -36,11 +36,17 @@ public class HexCell : MonoBehaviour {
         Instantiate(prefab_castle, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
     }
 
-    public void Click() {
-        animator.Play("CellClicked");
+    public void Focus() {
+        animator.SetBool("focus", true);
+        //animator.Play("CellClicked");
     }
 
     public void LooseFocus() {
-        animator.Play("CellLooseFocus");
+        animator.SetBool("focus", false);
+        //animator.Play("CellLooseFocus");
+    }
+
+    public Type GetCellType() {
+        return type;
     }
 }

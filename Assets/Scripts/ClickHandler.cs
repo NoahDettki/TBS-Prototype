@@ -3,10 +3,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 public class ClickHandler : MonoBehaviour
 {
+    public GameObject buildingAid;
     private Mouse mouse;
     private Camera cam;
     private bool leftMouseDown;
     private bool rightMouseDown;
+    private float mouseDownTimer;
     private Vector3 thisMousePos;
     private Vector3 lastDragPoint;
     private Plane dragPlane;
@@ -15,6 +17,7 @@ public class ClickHandler : MonoBehaviour
         cam = Camera.main;
         leftMouseDown = false;
         rightMouseDown = false;
+        mouseDownTimer = 0f;
         dragPlane = new Plane(Vector3.up, Vector3.zero);
     }
 
@@ -43,7 +46,21 @@ public class ClickHandler : MonoBehaviour
             }
         }
         if (mouse.rightButton.wasReleasedThisFrame) {
+            // Right mouse CLICK
+            if (mouseDownTimer < 0.2f) {
+                GameHandler.game.building = GameHandler.Building.NONE;
+                EventSystem.current.SetSelectedGameObject(null);
+                RemoveBuildingAid();
+            }
             rightMouseDown = false;
+            mouseDownTimer = 0f;
+        }
+        if (rightMouseDown) {
+            mouseDownTimer += Time.deltaTime;
+        }
+        // Build menu
+        if (GameHandler.game.building != GameHandler.Building.NONE) {
+            SetBuildingAid(thisMousePos);
         }
     }
 
@@ -80,7 +97,7 @@ public class ClickHandler : MonoBehaviour
                         GameHandler.game.focusedCell.LooseFocus();
                     }
                     // Focus clicked cell
-                    cell.Click();
+                    cell.Focus();
                     GameHandler.game.focusedCell = cell;
                     break;
             }
@@ -90,5 +107,48 @@ public class ClickHandler : MonoBehaviour
     private void RightDrag(Vector3 dragDirection) {
         // Drags the camera
         cam.transform.position = new Vector3(cam.transform.position.x - dragDirection.x, cam.transform.position.y, cam.transform.position.z - dragDirection.z);
+    }
+
+    private void SetBuildingAid(Vector3 mousePosition) {
+        Ray ray = cam.ScreenPointToRay(mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit)) {
+            // Only show building aid on cells
+            if (!hit.collider.CompareTag("Terrain")) {
+                if (buildingAid.activeInHierarchy) RemoveBuildingAid();
+                return;
+            }
+            
+            HexCell cell = hit.collider.GetComponentInParent<HexCell>();
+            // Only show building aid on valid cells
+            if (cell.GetCellType() != HexCell.Type.FOREST && cell.GetCellType() != HexCell.Type.MEADOW) {
+                if (buildingAid.activeInHierarchy) RemoveBuildingAid();
+                return;
+            }
+
+            // Show building aid
+            if (!buildingAid.activeInHierarchy) buildingAid.SetActive(true);
+            if (GameHandler.game.focusedCell != cell) {
+                buildingAid.transform.parent = cell.transform.GetChild(0);
+                buildingAid.transform.position = cell.transform.GetChild(0).position;
+                if (GameHandler.game.focusedCell != null) {
+                    GameHandler.game.focusedCell.LooseFocus();
+                }
+                GameHandler.game.focusedCell = cell;
+                cell.Focus();
+            }
+            
+        } else {
+            // Nothing was hit with the raycast
+            if (buildingAid.activeInHierarchy) RemoveBuildingAid();
+            return;
+        }
+    }
+
+    private void RemoveBuildingAid() {
+        buildingAid.SetActive(false);
+        if (GameHandler.game.focusedCell != null) {
+            GameHandler.game.focusedCell.LooseFocus();
+            GameHandler.game.focusedCell = null;
+        }
     }
 }
