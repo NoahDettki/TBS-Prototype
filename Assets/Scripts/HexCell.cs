@@ -4,15 +4,19 @@ public class HexCell : MonoBehaviour {
     public enum Type { MEADOW, FOREST, MOUNTAINS }
     public enum Building { NONE, CASTLE, SAWMILL, QUARRY, WINDMILL, GRAIN }
     public GameObject prefab_forest, prefab_mountains;
-    public GameObject prefab_castle;
+    public GameObject prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
     public HexCoordinates coordinates;
 
     private Type type;
     private Building building;
+    private GameObject go_building;
     private Animator animator;
 
     private void Awake() {
         animator = GetComponent<Animator>();
+        type = Type.MEADOW;
+        building = Building.NONE;
+        go_building = null;
     }
 
     public void SetRandomType() {
@@ -46,6 +50,27 @@ public class HexCell : MonoBehaviour {
                 return false;
         }
         return true;
+    }
+
+    /// <summary>
+    /// Includes function CanBuild() to test if the building can be placed. If true, places it
+    /// </summary>
+    /// <param name="b"></param>
+    /// <returns>true, if the building was placed. Returns false otherwise</returns>
+    public bool Build(Building b) {
+        if (CanBuild(b)) {
+            switch(b) {
+                case Building.SAWMILL:
+                    go_building = Instantiate<GameObject>(prefab_sawmill,transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
+                    break;
+                case Building.QUARRY:
+                    go_building = Instantiate<GameObject>(prefab_sawmill, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
+                    break;
+            }
+            // Start Animation
+            building = b;
+            return true;
+        } else return false;
     }
 
     public void SetCastle() {

@@ -48,9 +48,7 @@ public class ClickHandler : MonoBehaviour
         if (mouse.rightButton.wasReleasedThisFrame) {
             // Right mouse CLICK
             if (mouseDownTimer < 0.2f) {
-                GameHandler.game.building = HexCell.Building.NONE;
-                EventSystem.current.SetSelectedGameObject(null);
-                RemoveBuildingAid();
+                EndBuildingMode();
             }
             rightMouseDown = false;
             mouseDownTimer = 0f;
@@ -89,17 +87,24 @@ public class ClickHandler : MonoBehaviour
             switch (hit.collider.tag) {
                 case "Terrain":
                     HexCell cell = hit.collider.GetComponentInParent<HexCell>();
-                    // Cannot click a cell that is already focused
-                    if (cell == GameHandler.game.focusedCell)
-                        return;
-                    // Unfocus last clicked Cell
-                    if (GameHandler.game.focusedCell != null) {
-                        GameHandler.game.focusedCell.LooseFocus();
+
+                    if (GameHandler.game.building != HexCell.Building.NONE) {
+                        cell.Build(GameHandler.game.building);
+                        EndBuildingMode();
                     }
-                    // Focus clicked cell
-                    cell.Focus();
-                    GameHandler.game.focusedCell = cell;
                     break;
+
+                    //// Cannot click a cell that is already focused
+                    //if (cell == GameHandler.game.focusedCell)
+                    //    return;
+                    //// Unfocus last clicked Cell
+                    //if (GameHandler.game.focusedCell != null) {
+                    //    GameHandler.game.focusedCell.LooseFocus();
+                    //}
+                    //// Focus clicked cell
+                    //cell.Focus();
+                    //GameHandler.game.focusedCell = cell;
+                    //break;
             }
         }
     }
@@ -142,6 +147,12 @@ public class ClickHandler : MonoBehaviour
             if (buildingAid.activeInHierarchy) RemoveBuildingAid();
             return;
         }
+    }
+
+    private void EndBuildingMode() {
+        GameHandler.game.building = HexCell.Building.NONE;
+        EventSystem.current.SetSelectedGameObject(null);
+        RemoveBuildingAid();
     }
 
     private void RemoveBuildingAid() {

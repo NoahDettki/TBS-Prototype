@@ -49,6 +49,10 @@ MonoBehaviour:
   prefab_forest: {fileID: 919132149155446097, guid: d649b4515b0d05b4ab184bfcb3e33eff, type: 3}
   prefab_mountains: {fileID: 919132149155446097, guid: ea8eb529035595046863e31b0882e79e, type: 3}
   prefab_castle: {fileID: 919132149155446097, guid: 484111a4b91a6884a8e9fa59bb5f4662, type: 3}
+  prefab_sawmill: {fileID: 788577353029569449, guid: 17b44a27362a1a243b8595af7f63e519, type: 3}
+  prefab_quarry: {fileID: 919132149155446097, guid: 914bde6a49dc7b94788996918d8c8cb0, type: 3}
+  prefab_windmill: {fileID: 919132149155446097, guid: 44436ae9d19d64347a285e5a866008bd, type: 3}
+  prefab_grain: {fileID: 919132149155446097, guid: 1c00c16ff6e6aff48b51185fcf1a23dd, type: 3}
   coordinates:
     x: 0
     z: 0
