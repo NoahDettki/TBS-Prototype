@@ -133,8 +133,8 @@ public class ClickHandler : MonoBehaviour
             // Show building aid
             if (!buildingAid.activeInHierarchy) buildingAid.SetActive(true);
             if (GameHandler.game.focusedCell != cell) {
-                buildingAid.transform.parent = cell.transform.GetChild(0);
-                buildingAid.transform.position = cell.transform.GetChild(0).position;
+                buildingAid.transform.parent = cell.go_terrain.transform;
+                buildingAid.transform.position = cell.go_terrain.transform.position;
                 if (GameHandler.game.focusedCell != null) {
                     GameHandler.game.focusedCell.LooseFocus();
                 }

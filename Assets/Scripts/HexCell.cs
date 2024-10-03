@@ -6,17 +6,16 @@ public class HexCell : MonoBehaviour {
     public GameObject prefab_forest, prefab_mountains;
     public GameObject prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
     public HexCoordinates coordinates;
+    public GameObject go_terrain, go_building;
 
     private Type type;
     private Building building;
-    private GameObject go_building;
     private Animator animator;
 
     private void Awake() {
         animator = GetComponent<Animator>();
         type = Type.MEADOW;
         building = Building.NONE;
-        go_building = null;
     }
 
     public void SetRandomType() {
@@ -61,13 +60,13 @@ public class HexCell : MonoBehaviour {
         if (CanBuild(b)) {
             switch(b) {
                 case Building.SAWMILL:
-                    go_building = Instantiate<GameObject>(prefab_sawmill,transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
+                    Instantiate<GameObject>(prefab_sawmill,go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
                     break;
                 case Building.QUARRY:
-                    go_building = Instantiate<GameObject>(prefab_sawmill, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
+                    //go_building = Instantiate<GameObject>(prefab_sawmill, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
                     break;
             }
-            // Start Animation
+            animator.SetTrigger("place");
             building = b;
             return true;
         } else return false;
@@ -80,12 +79,18 @@ public class HexCell : MonoBehaviour {
 
     public void Focus() {
         animator.SetBool("focus", true);
-        //animator.Play("CellClicked");
     }
 
     public void LooseFocus() {
         animator.SetBool("focus", false);
-        //animator.Play("CellLooseFocus");
+    }
+
+    public void PlayBuildSound() {
+        go_building.GetComponent<PlaySound>().Play();
+    }
+
+    public void PlaySmokeParticles() {
+        go_terrain.GetComponent<ParticleSystem>().Play();
     }
 
     public Type GetCellType() {
