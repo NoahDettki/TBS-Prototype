@@ -604,7 +604,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84577c3aaef9a6c44a589a40715d6480, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellPrefab: {fileID: 4626632408630105268, guid: 846ebe05854ce62468c534d28a037e50, type: 3}
+  prefab_meadow: {fileID: 4626632408630105268, guid: 846ebe05854ce62468c534d28a037e50, type: 3}
+  prefab_forest: {fileID: 8604874379949909447, guid: b98542a7263a6cb48a9013738432df1b, type: 3}
+  prefab_mountain: {fileID: 3266853159115122292, guid: d5b4e1e4a0a95324cbbcce67470ad00e, type: 3}
 --- !u!4 &498248319
 Transform:
   m_ObjectHideFlags: 0

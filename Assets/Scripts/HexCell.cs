@@ -37,6 +37,23 @@ public class HexCell : MonoBehaviour {
         }
     }
 
+    public void SetType(Type t) {
+        this.type = t;
+        Quaternion rotation;
+        switch (t) {
+            case Type.MEADOW:
+                break;
+            case Type.FOREST:
+                rotation = Quaternion.AngleAxis(60f * Random.Range(0, 6), Vector3.up);
+                Instantiate(prefab_forest, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                break;
+            case Type.MOUNTAINS:
+                rotation = Quaternion.AngleAxis(60f * Random.Range(0, 6), Vector3.up);
+                Instantiate(prefab_mountains, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                break;
+        }
+    }
+
     public bool CanBuild(Building b) {
         // Can only build on empty cells
         if (building != Building.NONE) return false;
