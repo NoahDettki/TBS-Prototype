@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 6c8f723b257365d4a88539914fed0d47, type: 2}
+    - target: {fileID: 4626632408630105268, guid: 846ebe05854ce62468c534d28a037e50, type: 3}
+      propertyPath: type
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8537524456530704282, guid: 846ebe05854ce62468c534d28a037e50, type: 3}
       propertyPath: m_Name
       value: HexCell Mountain

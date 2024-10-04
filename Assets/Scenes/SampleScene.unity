@@ -607,6 +607,11 @@ MonoBehaviour:
   prefab_meadow: {fileID: 4626632408630105268, guid: 846ebe05854ce62468c534d28a037e50, type: 3}
   prefab_forest: {fileID: 8604874379949909447, guid: b98542a7263a6cb48a9013738432df1b, type: 3}
   prefab_mountain: {fileID: 3266853159115122292, guid: d5b4e1e4a0a95324cbbcce67470ad00e, type: 3}
+  layerHeight: 0.3
+  mountainNoiseThreshold: 0.672
+  mountainNoiseScale: 0.306
+  forestNoiseThreshold: 0.5
+  forestNoiseScale: 0.296
 --- !u!4 &498248319
 Transform:
   m_ObjectHideFlags: 0
@@ -1416,7 +1421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   building: 0
   grid: {fileID: 498248318}
-  gridRings: 5
+  gridRings: 10
   focusedCell: {fileID: 0}
 --- !u!1 &1264755490
 GameObject:

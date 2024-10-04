@@ -1,56 +1,74 @@
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public class HexCell : MonoBehaviour {
     public enum Type { MEADOW, FOREST, MOUNTAINS }
     public enum Building { NONE, CASTLE, SAWMILL, QUARRY, WINDMILL, GRAIN }
-    public GameObject prefab_forest, prefab_mountains;
+    public GameObject prefab_rockyMeadow, prefab_rockyMeadow2, prefab_forest, prefab_rockyForest, prefab_mountains, prefab_mountains2, prefab_highMountains, prefab_highMountains2;
     public GameObject prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
     public HexCoordinates coordinates;
     public GameObject go_terrain, go_building;
 
-    private Type type;
+    public Type type = Type.MEADOW;
     private Building building;
     private Animator animator;
+    private GameObject go_decoration;
+    private int heightLevel;
 
     private void Awake() {
         animator = GetComponent<Animator>();
-        type = Type.MEADOW;
         building = Building.NONE;
     }
 
-    public void SetRandomType() {
-        Quaternion rotation;
-        switch (Random.Range(0, 3)) {
-            case 0:
-                type = Type.MEADOW;
-                break;
-            case 1:
-                type = Type.FOREST;
-                rotation = Quaternion.AngleAxis(60f * Random.Range(0, 6), Vector3.up);
-                Instantiate(prefab_forest, transform.GetChild(0).position, rotation, transform.GetChild(0));
-                break;
-            case 2:
-                type = Type.MOUNTAINS;
-                rotation = Quaternion.AngleAxis(60f * Random.Range(0, 6), Vector3.up);
-                Instantiate(prefab_mountains, transform.GetChild(0).position, rotation, transform.GetChild(0));
-                break;
-        }
-    }
-
-    public void SetType(Type t) {
-        this.type = t;
-        Quaternion rotation;
-        switch (t) {
+    public void Decorate() {
+        Quaternion rotation = Quaternion.AngleAxis(60f * Random.Range(0, 6), Vector3.up);
+        float rng = UnityEngine.Random.value;
+        switch (type) {
             case Type.MEADOW:
+                // Meadows with buildings need no decoration
+                if (building != Building.NONE)
+                    return;
+                // Meadows at a certain height level can have decorative rocks on them
+                if (heightLevel >= 2) {
+                    if (rng > 0.8f) {
+                        go_decoration = Instantiate(prefab_rockyMeadow, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        break;
+                    }
+                    if (rng > 0.5f) {
+                        go_decoration = Instantiate(prefab_rockyMeadow2, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        break;
+                    }
+                }
                 break;
             case Type.FOREST:
-                rotation = Quaternion.AngleAxis(60f * Random.Range(0, 6), Vector3.up);
-                Instantiate(prefab_forest, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                // Forests at a certain height level can have decorative rocks on them
+                if (heightLevel >= 2) {
+                    if (rng > 0.5f) {
+                        go_decoration = Instantiate(prefab_rockyForest, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        break;
+                    }
+                }
+                go_decoration = Instantiate(prefab_forest, transform.GetChild(0).position, rotation, transform.GetChild(0));
                 break;
             case Type.MOUNTAINS:
-                rotation = Quaternion.AngleAxis(60f * Random.Range(0, 6), Vector3.up);
-                Instantiate(prefab_mountains, transform.GetChild(0).position, rotation, transform.GetChild(0));
-                break;
+                // Mountains at a certain height level don't have vegetation
+                if (heightLevel >= 3) {
+                    if (rng > 0.5f) {
+                        go_decoration = Instantiate(prefab_highMountains, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        break;
+                    } else {
+                        go_decoration = Instantiate(prefab_highMountains2, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        break;
+                    }
+                } else {
+                    if (rng > 0.5f) {
+                        go_decoration = Instantiate(prefab_mountains, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        break;
+                    } else {
+                        go_decoration = Instantiate(prefab_mountains2, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        break;
+                    }
+                }
         }
     }
 
@@ -112,5 +130,9 @@ public class HexCell : MonoBehaviour {
 
     public Type GetCellType() {
         return type;
+    }
+
+    public void SetHeightLevel(int level) {
+        heightLevel = level;
     }
 }

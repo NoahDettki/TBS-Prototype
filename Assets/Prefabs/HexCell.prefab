@@ -90,8 +90,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f1951157e3b5134c9ac1532722d17c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_rockyMeadow: {fileID: 7279083456564511369, guid: 56777f7704e3353469159399ef88085d, type: 3}
+  prefab_rockyMeadow2: {fileID: 16598560799102006, guid: 57f217af52a801345b002cdd7b85f4cb, type: 3}
   prefab_forest: {fileID: 919132149155446097, guid: d649b4515b0d05b4ab184bfcb3e33eff, type: 3}
-  prefab_mountains: {fileID: 919132149155446097, guid: ea8eb529035595046863e31b0882e79e, type: 3}
+  prefab_rockyForest: {fileID: 3895448564400169877, guid: 6ae21997e47ef2341a39081311094606, type: 3}
+  prefab_mountains: {fileID: 5486550200502413230, guid: 83f7649bf2a8a864c9bc3b04be564639, type: 3}
+  prefab_mountains2: {fileID: 5092090850065801621, guid: f1a0aec41f57b4f42baec391fa2a4f42, type: 3}
+  prefab_highMountains: {fileID: 8433579143312780632, guid: fe338bca62b915347a89e53cb0f71d69, type: 3}
+  prefab_highMountains2: {fileID: 3140007067401314022, guid: 77cb9e09623222a42898f246a04d136e, type: 3}
   prefab_castle: {fileID: 919132149155446097, guid: 484111a4b91a6884a8e9fa59bb5f4662, type: 3}
   prefab_sawmill: {fileID: 7578399405213736551, guid: e00ccd6e4e5ee2244a2f0b8e585b67d3, type: 3}
   prefab_quarry: {fileID: 919132149155446097, guid: 914bde6a49dc7b94788996918d8c8cb0, type: 3}
@@ -102,6 +108,7 @@ MonoBehaviour:
     z: 0
   go_terrain: {fileID: 3268203247824211715}
   go_building: {fileID: 8332564119629914356}
+  type: 0
 --- !u!95 &2362114101240035958
 Animator:
   serializedVersion: 5
