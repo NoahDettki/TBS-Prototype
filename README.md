@@ -6,5 +6,5 @@ This is a little turn-based strategy game that I am making for a school project.
 Currently none. This project is WIP and still in early development.
 
 ## Controls
-Left-click to focus a cell
-Right-click to drag camera
+Right mouse button to drag camera
+Click a building card to select it and place it with left mouse button.

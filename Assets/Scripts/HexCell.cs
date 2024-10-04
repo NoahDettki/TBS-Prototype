@@ -4,7 +4,9 @@ using UnityEngine;
 public class HexCell : MonoBehaviour {
     public enum Type { MEADOW, FOREST, MOUNTAINS }
     public enum Building { NONE, CASTLE, SAWMILL, QUARRY, WINDMILL, GRAIN }
-    public GameObject prefab_rockyMeadow, prefab_rockyMeadow2, prefab_forest, prefab_rockyForest, prefab_mountains, prefab_mountains2, prefab_highMountains, prefab_highMountains2;
+    public GameObject prefab_rockyMeadow, prefab_rockyMeadow2,
+        prefab_forest, prefab_rockyForest, prefab_lumberForest,
+        prefab_mountains, prefab_mountains2, prefab_highMountains, prefab_highMountains2;
     public GameObject prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
     public HexCoordinates coordinates;
     public GameObject go_terrain, go_building;
@@ -31,11 +33,11 @@ public class HexCell : MonoBehaviour {
                 // Meadows at a certain height level can have decorative rocks on them
                 if (heightLevel >= 2) {
                     if (rng > 0.8f) {
-                        go_decoration = Instantiate(prefab_rockyMeadow, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        go_decoration = Instantiate(prefab_rockyMeadow, go_terrain.transform.position, rotation, go_terrain.transform);
                         break;
                     }
                     if (rng > 0.5f) {
-                        go_decoration = Instantiate(prefab_rockyMeadow2, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        go_decoration = Instantiate(prefab_rockyMeadow2, go_terrain.transform.position, rotation, go_terrain.transform);
                         break;
                     }
                 }
@@ -44,28 +46,28 @@ public class HexCell : MonoBehaviour {
                 // Forests at a certain height level can have decorative rocks on them
                 if (heightLevel >= 2) {
                     if (rng > 0.5f) {
-                        go_decoration = Instantiate(prefab_rockyForest, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        go_decoration = Instantiate(prefab_rockyForest, go_terrain.transform.position, rotation, go_terrain.transform);
                         break;
                     }
                 }
-                go_decoration = Instantiate(prefab_forest, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                go_decoration = Instantiate(prefab_forest, go_terrain.transform.position, rotation, go_terrain.transform);
                 break;
             case Type.MOUNTAINS:
                 // Mountains at a certain height level don't have vegetation
                 if (heightLevel >= 3) {
                     if (rng > 0.5f) {
-                        go_decoration = Instantiate(prefab_highMountains, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        go_decoration = Instantiate(prefab_highMountains, go_terrain.transform.position, rotation, go_terrain.transform);
                         break;
                     } else {
-                        go_decoration = Instantiate(prefab_highMountains2, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        go_decoration = Instantiate(prefab_highMountains2, go_terrain.transform.position, rotation, go_terrain.transform);
                         break;
                     }
                 } else {
                     if (rng > 0.5f) {
-                        go_decoration = Instantiate(prefab_mountains, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        go_decoration = Instantiate(prefab_mountains, go_terrain.transform.position, rotation, go_terrain.transform);
                         break;
                     } else {
-                        go_decoration = Instantiate(prefab_mountains2, transform.GetChild(0).position, rotation, transform.GetChild(0));
+                        go_decoration = Instantiate(prefab_mountains2, go_terrain.transform.position, rotation, go_terrain.transform);
                         break;
                     }
                 }
@@ -95,6 +97,11 @@ public class HexCell : MonoBehaviour {
         if (CanBuild(b)) {
             switch(b) {
                 case Building.SAWMILL:
+                    Destroy(go_decoration);
+                    // Lumbermills in the forest spawn with a few trees around them
+                    if (type == Type.FOREST) {
+                        go_decoration = Instantiate(prefab_lumberForest, go_terrain.transform.position, Quaternion.identity, go_terrain.transform);
+                    }
                     Instantiate<GameObject>(prefab_sawmill,go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
                     break;
                 case Building.QUARRY:
@@ -108,7 +115,7 @@ public class HexCell : MonoBehaviour {
     }
 
     public void SetCastle() {
-        Instantiate(prefab_castle, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
+        Instantiate(prefab_castle, go_building.transform.position, Quaternion.identity, go_building.transform);
         building = Building.CASTLE;
     }
 
