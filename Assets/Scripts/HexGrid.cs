@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class HexGrid : MonoBehaviour {
@@ -123,6 +124,107 @@ public class HexGrid : MonoBehaviour {
         if (x < 0 || z < 0 || x >= cells.GetLength(0) || z >= cells.GetLength(1))
             return null;
         return cells[x, z];
+    }
+
+    public List<HexCell> GetNeighbours(int x, int z) {
+        List<HexCell> neighbours = new List<HexCell>();
+        HexCell c = GetCellAt(x + 1, z);
+        if (c != null) neighbours.Add(c);
+        c = GetCellAt(x - 1, z);
+        if (c != null) neighbours.Add(c);
+        c = GetCellAt(x - 1, z + 1);
+        if (c != null) neighbours.Add(c);
+        c = GetCellAt(x, z + 1);
+        if (c != null) neighbours.Add(c);
+        c = GetCellAt(x, z - 1);
+        if (c != null) neighbours.Add(c);
+        c = GetCellAt(x + 1, z - 1);
+        if (c != null) neighbours.Add(c);
+        return neighbours;
+    }
+
+    /// <summary>
+    /// This method calculates the shortest path from one cell to another cell, given that there is a possible path.
+    /// The A* Algorithm is used for that.
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <returns></returns>
+    public List<HexCell> FindPath(HexCell start, HexCell end) {
+        List<PathCell> openList = new List<PathCell>();
+        List<PathCell> closedList = new List<PathCell>();
+        openList.Add(new PathCell(start.coordinates.X, start.coordinates.Z));
+
+        while (openList.Count > 0) {
+            // Find cell with least f
+            PathCell q = openList[0];
+            for (int i = 1; i < openList.Count; i++) {
+                if (openList[i].GetF() < q.GetF()) {
+                    q = openList[i];
+                }
+            }
+
+            openList.Remove(q);
+
+            foreach (HexCell c in GetNeighbours(q.X, q.Z)) {
+                // Set the parent so that the best path can be recreated in the end
+                PathCell successor = new PathCell(c.coordinates.X, c.coordinates.Z);
+                successor.SetParent(q);
+
+                // Check if the end was reached
+                if (successor.X == end.coordinates.X && successor.Z == end.coordinates.Z) {
+                    List<HexCell> path = new List<HexCell>();
+                    PathCell current = successor;
+                    while (current != null) {
+                        path.Add(GetCellAt(current.X, current.Z));
+                        current = current.GetParent();
+                    }
+                    return path;
+                }
+
+                // Check if cell is traversable. Destination cells are never traversable but still have to be considered,
+                // so this condition is only checked AFTER checking if the destination was reached.
+                if (!c.IsTraversable()) {
+                    continue;
+                }
+
+                successor.SetG(q.GetG() + 1 /* TODO: replace by distance factors (like roads)*/);
+                successor.SetH((GetCellAt(successor.X, successor.Z).transform.position - end.transform.position).magnitude);
+                successor.SetF(successor.GetG() + successor.GetH());
+
+                // Only continue with this cell (aka successor) if it wasn't visited with a lower f value already
+                bool skipSuccessor = false;
+                foreach (PathCell other in openList) {
+                    if (other.X == successor.X && other.Z == successor.Z) {
+                        if (other.GetF() < successor.GetF()) {
+                            skipSuccessor = true;
+                            break;
+                        }
+                    }
+                }
+                if (skipSuccessor) {
+                    continue;
+                }
+                foreach (PathCell other in closedList) {
+                    if (other.X == successor.X && other.Z == successor.Z) {
+                        if (other.GetF() < successor.GetF()) {
+                            skipSuccessor = true;
+                            break;
+                        }
+                    }
+                }
+                if (skipSuccessor) {
+                    continue;
+                }
+
+                openList.Add(successor); // TODO: if algorithm not working try adding the other node instead??
+            }
+
+            closedList.Add(q);
+        }
+
+        // There is no path to the destination
+        return null;
     }
 
     public void AnalyseNeighbouringCells(int x, int z) {

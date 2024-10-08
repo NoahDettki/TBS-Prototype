@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
@@ -117,6 +118,12 @@ public class HexCell : MonoBehaviour {
     public void SetCastle() {
         Instantiate(prefab_castle, go_building.transform.position, Quaternion.identity, go_building.transform);
         building = Building.CASTLE;
+    }
+
+    public bool IsTraversable() {
+        if (type == Type.MOUNTAINS) return false;
+        if (building != Building.NONE) return false;
+        return true;
     }
 
     public void Focus() {

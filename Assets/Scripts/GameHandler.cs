@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameHandler : MonoBehaviour {
@@ -18,6 +19,11 @@ public class GameHandler : MonoBehaviour {
     [HideInInspector]
     public HexCell focusedCell;
 
+    public bool testPathfinding = false;
+    public Vector2 testPathfindingStart;
+    public Vector2 testPathfindingEnd;
+    public GameObject testPathMarker;
+
     public void Awake() {
         // Singleton pattern
         if (game == null) {
@@ -32,9 +38,19 @@ public class GameHandler : MonoBehaviour {
         focusedCell = null;
     }
 
+    private void TestPathfinding() {
+        List<HexCell> path = grid.FindPath(grid.GetCellAt((int)testPathfindingStart.x, (int)testPathfindingStart.y), grid.GetCellAt((int)testPathfindingEnd.x, (int)testPathfindingEnd.y));
+        foreach (HexCell cell in path) {
+            Instantiate(testPathMarker, cell.transform.position, Quaternion.identity);
+        }
+        if (path.Count > 0) print("No possible path");
+    }
+
     public void StartNewGame() {
         State = GameState.PREPARING;
         grid.GenerateCenteredGrid(gridRings);
         State = GameState.INGAME;
+        // TODO: remove eventually. This is only for debugging
+        if (testPathfinding)TestPathfinding();
     }
 }
