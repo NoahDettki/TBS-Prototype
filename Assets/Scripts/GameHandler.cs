@@ -12,12 +12,17 @@ public class GameHandler : MonoBehaviour {
     }
     public static GameState State { get; private set; }
 
-    public HexCell.Building building;
 
     public HexGrid grid;
     public int gridRings;
+
     [HideInInspector]
     public HexCell focusedCell;
+    [HideInInspector]
+    public HexCell.Building building;
+    [HideInInspector]
+    public int wood, stone, food;
+    private int woodGain, stoneGain, foodGain;
 
     public bool testPathfinding = false;
     public Vector2 testPathfindingStart;
@@ -52,5 +57,9 @@ public class GameHandler : MonoBehaviour {
         State = GameState.INGAME;
         // TODO: remove eventually. This is only for debugging
         if (testPathfinding)TestPathfinding();
+    }
+
+    public void EndRound() {
+
     }
 }

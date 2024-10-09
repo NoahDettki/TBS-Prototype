@@ -41,4 +41,8 @@ public class MenuHandler : MonoBehaviour
         GameHandler.game.building = building;
         print("Player selected " + building);
     }
+
+    public void EndRound() {
+        GameHandler.game.EndRound();
+    }
 }

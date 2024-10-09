@@ -33,6 +33,10 @@ public class Donkey : MonoBehaviour
             return;
             // TODO: the donkey reached the destination
         }
+        // Set position to new cell and adjust rotation
         transform.position = path[pathIndex].transform.position;
+        Vector3 direction = path[pathIndex + 1].transform.position - path[pathIndex].transform.position;
+        direction.y = 0;
+        transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
     }
 }
