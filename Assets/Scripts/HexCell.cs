@@ -12,11 +12,14 @@ public class HexCell : MonoBehaviour {
     public HexCoordinates coordinates;
     public GameObject go_terrain, go_building;
 
+    public Donkey prefab_donkey;
+
     public Type type = Type.MEADOW;
     private Building building;
     private Animator animator;
     private GameObject go_decoration;
     private int heightLevel;
+    private Donkey donkey;
 
     private void Awake() {
         animator = GetComponent<Animator>();
@@ -96,6 +99,10 @@ public class HexCell : MonoBehaviour {
     /// <returns>true, if the building was placed. Returns false otherwise</returns>
     public bool Build(Building b) {
         if (CanBuild(b)) {
+            // Check if this cell is reachable from the castle
+            List<HexCell> path = GameHandler.game.grid.FindPath(this);
+            if (path == null) return false;
+
             switch(b) {
                 case Building.SAWMILL:
                     Destroy(go_decoration);
@@ -111,6 +118,13 @@ public class HexCell : MonoBehaviour {
             }
             animator.SetTrigger("place");
             building = b;
+
+            // Placing a building triggers a worker travelling to the spot
+            Vector3 donkeyDirection = path[1].transform.position - path[0].transform.position;
+            donkeyDirection.y = 0;
+            donkey = Instantiate<Donkey>(prefab_donkey, path[0].transform.position, Quaternion.LookRotation(donkeyDirection, Vector3.up));
+            donkey.SetPath(path);
+
             return true;
         } else return false;
     }

@@ -147,13 +147,17 @@ public class HexGrid : MonoBehaviour {
     /// This method calculates the shortest path from one cell to another cell, given that there is a possible path.
     /// The A* Algorithm is used for that.
     /// </summary>
-    /// <param name="start"></param>
-    /// <param name="end"></param>
+    /// <param name="end">The destination cell</param>
+    /// <param name="start">Optional: The start cell. Leave empty to use map origin as start.</param>
     /// <returns></returns>
-    public List<HexCell> FindPath(HexCell start, HexCell end) {
+    public List<HexCell> FindPath(HexCell end, HexCell start = null) {
         List<PathCell> openList = new List<PathCell>();
         List<PathCell> closedList = new List<PathCell>();
-        openList.Add(new PathCell(start.coordinates.X, start.coordinates.Z));
+        if (start == null) {
+            openList.Add(new PathCell(0, 0));
+        } else {
+            openList.Add(new PathCell(start.coordinates.X, start.coordinates.Z));
+        }
 
         while (openList.Count > 0) {
             // Find cell with least f
@@ -179,6 +183,7 @@ public class HexGrid : MonoBehaviour {
                         path.Add(GetCellAt(current.X, current.Z));
                         current = current.GetParent();
                     }
+                    path.Reverse();
                     return path;
                 }
 

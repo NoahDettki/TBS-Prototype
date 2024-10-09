@@ -88,23 +88,12 @@ public class ClickHandler : MonoBehaviour
                 case "Terrain":
                     HexCell cell = hit.collider.GetComponentInParent<HexCell>();
 
+                    // If in building mode, try to build
                     if (GameHandler.game.building != HexCell.Building.NONE) {
                         cell.Build(GameHandler.game.building);
                         EndBuildingMode();
                     }
                     break;
-
-                    //// Cannot click a cell that is already focused
-                    //if (cell == GameHandler.game.focusedCell)
-                    //    return;
-                    //// Unfocus last clicked Cell
-                    //if (GameHandler.game.focusedCell != null) {
-                    //    GameHandler.game.focusedCell.LooseFocus();
-                    //}
-                    //// Focus clicked cell
-                    //cell.Focus();
-                    //GameHandler.game.focusedCell = cell;
-                    //break;
             }
         }
     }

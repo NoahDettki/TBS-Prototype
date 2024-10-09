@@ -109,6 +109,7 @@ MonoBehaviour:
     z: 0
   go_terrain: {fileID: 3268203247824211715}
   go_building: {fileID: 8332564119629914356}
+  prefab_donkey: {fileID: 3627300600005355590, guid: c116be4c0f7931041818feb943b94769, type: 3}
   type: 0
 --- !u!95 &2362114101240035958
 Animator:
