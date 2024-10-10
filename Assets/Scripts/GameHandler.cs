@@ -60,6 +60,6 @@ public class GameHandler : MonoBehaviour {
     }
 
     public void EndRound() {
-
+        grid.EndRound();
     }
 }

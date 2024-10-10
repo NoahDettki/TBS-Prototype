@@ -39,7 +39,7 @@ public class MenuHandler : MonoBehaviour
         if (building == GameHandler.game.building) return;
 
         GameHandler.game.building = building;
-        print("Player selected " + building);
+        //print("Player selected " + building);
     }
 
     public void EndRound() {

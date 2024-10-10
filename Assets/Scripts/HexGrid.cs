@@ -232,52 +232,62 @@ public class HexGrid : MonoBehaviour {
         return null;
     }
 
-    public void AnalyseNeighbouringCells(int x, int z) {
-        // Look at all neighbouring cells to decide the type of this cell
-        int forests = 0;
-        int mountains = 0;
-        HexCell neighbour = GetCellAt(x + 1, z);
-        if (neighbour != null) {
-            if (neighbour.GetCellType() == HexCell.Type.FOREST)
-                forests++;
-            if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
-                mountains++;
+    public void EndRound() {
+        for (int x = 0; x < cells.GetLength(0); x++) {
+            for (int z = 0; z < cells.GetLength(1); z++) {
+                if (cells[x, z] == null) continue;
+
+                cells[x, z].EndRound();
+            }
         }
-        neighbour = GetCellAt(x - 1, z);
-        if (neighbour != null) {
-            if (neighbour.GetCellType() == HexCell.Type.FOREST)
-                forests++;
-            if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
-                mountains++;
-        }
-        neighbour = GetCellAt(x - 1, z + 1);
-        if (neighbour != null) {
-            if (neighbour.GetCellType() == HexCell.Type.FOREST)
-                forests++;
-            if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
-                mountains++;
-        }
-        neighbour = GetCellAt(x, z + 1);
-        if (neighbour != null) {
-            if (neighbour.GetCellType() == HexCell.Type.FOREST)
-                forests++;
-            if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
-                mountains++;
-        }
-        neighbour = GetCellAt(x, z - 1);
-        if (neighbour != null) {
-            if (neighbour.GetCellType() == HexCell.Type.FOREST)
-                forests++;
-            if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
-                mountains++;
-        }
-        neighbour = GetCellAt(x + 1, z - 1);
-        if (neighbour != null) {
-            if (neighbour.GetCellType() == HexCell.Type.FOREST)
-                forests++;
-            if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
-                mountains++;
-        }
-        print(forests + " " + mountains);
     }
+
+    //public void AnalyseNeighbouringCells(int x, int z) {
+    //    // Look at all neighbouring cells to decide the type of this cell
+    //    int forests = 0;
+    //    int mountains = 0;
+    //    HexCell neighbour = GetCellAt(x + 1, z);
+    //    if (neighbour != null) {
+    //        if (neighbour.GetCellType() == HexCell.Type.FOREST)
+    //            forests++;
+    //        if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
+    //            mountains++;
+    //    }
+    //    neighbour = GetCellAt(x - 1, z);
+    //    if (neighbour != null) {
+    //        if (neighbour.GetCellType() == HexCell.Type.FOREST)
+    //            forests++;
+    //        if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
+    //            mountains++;
+    //    }
+    //    neighbour = GetCellAt(x - 1, z + 1);
+    //    if (neighbour != null) {
+    //        if (neighbour.GetCellType() == HexCell.Type.FOREST)
+    //            forests++;
+    //        if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
+    //            mountains++;
+    //    }
+    //    neighbour = GetCellAt(x, z + 1);
+    //    if (neighbour != null) {
+    //        if (neighbour.GetCellType() == HexCell.Type.FOREST)
+    //            forests++;
+    //        if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
+    //            mountains++;
+    //    }
+    //    neighbour = GetCellAt(x, z - 1);
+    //    if (neighbour != null) {
+    //        if (neighbour.GetCellType() == HexCell.Type.FOREST)
+    //            forests++;
+    //        if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
+    //            mountains++;
+    //    }
+    //    neighbour = GetCellAt(x + 1, z - 1);
+    //    if (neighbour != null) {
+    //        if (neighbour.GetCellType() == HexCell.Type.FOREST)
+    //            forests++;
+    //        if (neighbour.GetCellType() == HexCell.Type.MOUNTAINS)
+    //            mountains++;
+    //    }
+    //    print(forests + " " + mountains);
+    //}
 }

@@ -8,7 +8,7 @@ public class HexCell : MonoBehaviour {
     public GameObject prefab_rockyMeadow, prefab_rockyMeadow2,
         prefab_forest, prefab_rockyForest, prefab_lumberForest,
         prefab_mountains, prefab_mountains2, prefab_highMountains, prefab_highMountains2;
-    public GameObject prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
+    public GameObject prefab_construction, prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
     public HexCoordinates coordinates;
     public GameObject go_terrain, go_building;
 
@@ -16,6 +16,7 @@ public class HexCell : MonoBehaviour {
 
     public Type type = Type.MEADOW;
     private Building building;
+    private bool isConstructionFinished;
     private Animator animator;
     private GameObject go_decoration;
     private int heightLevel;
@@ -24,6 +25,7 @@ public class HexCell : MonoBehaviour {
     private void Awake() {
         animator = GetComponent<Animator>();
         building = Building.NONE;
+        isConstructionFinished = false;
     }
 
     public void Decorate() {
@@ -110,7 +112,7 @@ public class HexCell : MonoBehaviour {
                     if (type == Type.FOREST) {
                         go_decoration = Instantiate(prefab_lumberForest, go_terrain.transform.position, Quaternion.identity, go_terrain.transform);
                     }
-                    Instantiate<GameObject>(prefab_sawmill,go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
+                    Instantiate<GameObject>(prefab_construction,go_building.transform.position, Quaternion.Euler(0, 0, 0), go_building.transform);
                     break;
                 case Building.QUARRY:
                     //go_building = Instantiate<GameObject>(prefab_sawmill, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
@@ -118,6 +120,7 @@ public class HexCell : MonoBehaviour {
             }
             animator.SetTrigger("place");
             building = b;
+            isConstructionFinished = false;
 
             // Placing a building triggers a worker travelling to the spot
             Vector3 donkeyDirection = path[1].transform.position - path[0].transform.position;
@@ -132,6 +135,7 @@ public class HexCell : MonoBehaviour {
     public void SetCastle() {
         Instantiate(prefab_castle, go_building.transform.position, Quaternion.identity, go_building.transform);
         building = Building.CASTLE;
+        isConstructionFinished = true;
     }
 
     public bool IsTraversable() {
@@ -162,5 +166,28 @@ public class HexCell : MonoBehaviour {
 
     public void SetHeightLevel(int level) {
         heightLevel = level;
+    }
+
+    public void EndRound() {
+        if (donkey != null) {
+            donkey.Move();
+        }
+    }
+
+    public void DonkeyArrived() {
+        if (!isConstructionFinished) {
+            // The first arriving donkey finishes construction work
+            isConstructionFinished = true;
+            Destroy(go_building.transform.GetChild(0).gameObject);
+            switch (building) {
+                case Building.SAWMILL:
+                    Instantiate<GameObject>(prefab_sawmill, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
+                    break;
+            }
+        }
+
+        // DEBUG
+        Destroy(donkey.gameObject);
+        donkey = null;
     }
 }
