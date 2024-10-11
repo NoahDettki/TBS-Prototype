@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 7fe31c88649f1254ea44713f91e91699, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5e7660b74d9241448a44db92a025e94b, type: 2}
     - target: {fileID: 919132149155446097, guid: 7fe31c88649f1254ea44713f91e91699, type: 3}
       propertyPath: m_Name
       value: RockyForest
