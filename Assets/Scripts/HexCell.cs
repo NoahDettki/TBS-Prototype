@@ -1,22 +1,37 @@
 using System.Collections.Generic;
+using TMPro;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public class HexCell : MonoBehaviour {
     public enum Type { MEADOW, FOREST, MOUNTAINS }
     public enum Building { NONE, CASTLE, SAWMILL, QUARRY, WINDMILL, GRAIN }
+
+    // These two dictionaries decide how many resources a building generates
+    public static readonly Dictionary<(Building, Building), int> RES_BUILDING_MODIFIERS = new() {
+        { (Building.SAWMILL, Building.SAWMILL), -5 },
+    };
+    public static readonly Dictionary<(Building, Type), int> RES_TYPE_MODIFIERS = new() {
+        { (Building.SAWMILL, Type.FOREST), 1 },
+    };
+
+
     public GameObject prefab_rockyMeadow, prefab_rockyMeadow2,
         prefab_forest, prefab_rockyForest, prefab_lumberForest,
         prefab_mountains, prefab_mountains2, prefab_highMountains, prefab_highMountains2;
     public GameObject prefab_construction, prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
     public HexCoordinates coordinates;
-    public GameObject go_terrain, go_building;
+    public GameObject go_terrain, go_building, go_estimation;
+    public TMP_Text resourceText;
 
     public Donkey prefab_donkey;
 
     public Type type = Type.MEADOW;
     private Building building;
     private bool isConstructionFinished;
+    private int resourceGain;
+    private int resourceRadius;
+
     private Animator animator;
     private GameObject go_decoration;
     private int heightLevel;
@@ -26,6 +41,8 @@ public class HexCell : MonoBehaviour {
         animator = GetComponent<Animator>();
         building = Building.NONE;
         isConstructionFinished = false;
+        resourceGain = 0;
+        resourceRadius = 2;
     }
 
     public void Decorate() {
@@ -144,12 +161,36 @@ public class HexCell : MonoBehaviour {
         return true;
     }
 
+    public void PreviewResourceGain(Building b) {
+        go_estimation.SetActive(true);
+        int preview = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, b, resourceRadius);
+        resourceText.SetText(preview.ToString());
+    }
+
+    public void HideResourceGain() {
+        go_estimation.SetActive(false);
+    }
+
+    public void UpdateResourceGain() {
+        resourceGain = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, building, resourceRadius);
+        resourceText.SetText(resourceGain.ToString());
+    }
+
+    public int GetResourceRadius() {
+        return resourceRadius;
+    }
+
+    public int GetResourceGain() {
+        return resourceGain;
+    }
+
     public void Focus() {
         animator.SetBool("focus", true);
     }
 
     public void LooseFocus() {
         animator.SetBool("focus", false);
+        HideResourceGain();
     }
 
     public void PlayBuildSound() {
@@ -162,6 +203,10 @@ public class HexCell : MonoBehaviour {
 
     public Type GetCellType() {
         return type;
+    }
+
+    public Building GetBuilding() {
+        return building;
     }
 
     public void SetHeightLevel(int level) {

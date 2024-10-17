@@ -1,9 +1,11 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 public class ClickHandler : MonoBehaviour
 {
     public GameObject buildingAid;
+    public TMP_Text buildingAidText;
     private Mouse mouse;
     private Camera cam;
     private bool leftMouseDown;
@@ -121,9 +123,11 @@ public class ClickHandler : MonoBehaviour
 
             // Show building aid
             if (!buildingAid.activeInHierarchy) buildingAid.SetActive(true);
+            // Update building aid position and resource estimation
             if (GameHandler.game.focusedCell != cell) {
                 buildingAid.transform.parent = cell.go_terrain.transform;
                 buildingAid.transform.position = cell.go_terrain.transform.position;
+                UpdateBuildingAidEstimation(cell);
                 if (GameHandler.game.focusedCell != null) {
                     GameHandler.game.focusedCell.LooseFocus();
                 }
@@ -136,6 +140,11 @@ public class ClickHandler : MonoBehaviour
             if (buildingAid.activeInHierarchy) RemoveBuildingAid();
             return;
         }
+    }
+
+    private void UpdateBuildingAidEstimation(HexCell cell) {
+        cell.PreviewResourceGain(GameHandler.game.building);
+        //buildingAidText.SetText(cell.GetResourceGain() + "");
     }
 
     private void EndBuildingMode() {

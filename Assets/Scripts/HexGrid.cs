@@ -118,6 +118,12 @@ public class HexGrid : MonoBehaviour {
         cell.Decorate();
     }
 
+    /// <summary>
+    /// Returns the HexCell at the given coordinate or null if there is no HexCell at that position.
+    /// </summary>
+    /// <param name="x">The x coordinate of the cell</param>
+    /// <param name="z">The z coordinate of the cell</param>
+    /// <returns>HexCell at (x, z) if present, else null</returns>
     public HexCell GetCellAt(int x, int z) {
         x += ringCount;
         z += ringCount;
@@ -240,6 +246,50 @@ public class HexGrid : MonoBehaviour {
                 cells[x, z].EndRound();
             }
         }
+    }
+
+    /// <summary>
+    /// Calculates the amount of resources that a building generates based on the radius that the building covers
+    /// </summary>
+    /// <param name="building">The type of building that generates the r</param>
+    /// <param name="radius"></param>
+    /// <returns></returns>
+    public int CalculateBuildingOutput(int x, int z, HexCell.Building building, int radius) {
+        int output = 0;
+        for (int ring = 1; ring <= radius; ring++) {
+            for (int i = 0; i < ring; i++) {
+                // middle right to down right
+                output += BuildingOutputHelper(building, GetCellAt(x +ring, z - i));
+                // down right to down left
+                output += BuildingOutputHelper(building, GetCellAt(x + ring - i, z - ring));
+                // down left to middle left
+                output += BuildingOutputHelper(building, GetCellAt(x - i, z - ring + i));
+                // middle left to top left
+                output += BuildingOutputHelper(building, GetCellAt(x - ring, z + i));
+                // top left to top right
+                output += BuildingOutputHelper(building, GetCellAt(x - ring + i, z + ring));
+                // top right to middle right
+                output += BuildingOutputHelper(building, GetCellAt(x + i, z + ring - i));
+            }
+        }
+        return Mathf.Max(output, 0);
+    }
+
+    private int BuildingOutputHelper(HexCell.Building building, HexCell cell) {
+        // No cell means no resource modifier
+        if (cell == null) return 0;
+
+        // Buildings on top of cells block the gain of resources.
+        // That's why building is prioritized above cell type.
+        HexCell.Building cellBuilding = cell.GetBuilding();
+        if (cellBuilding != HexCell.Building.NONE) {
+            HexCell.RES_BUILDING_MODIFIERS.TryGetValue((building, cellBuilding), out int value1);
+            return value1;
+        }
+
+        // If the cell has not been built on, the cell type decides the resource gain
+        HexCell.RES_TYPE_MODIFIERS.TryGetValue((building, cell.GetCellType()), out int value2);
+        return value2;
     }
 
     //public void AnalyseNeighbouringCells(int x, int z) {

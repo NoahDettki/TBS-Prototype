@@ -1037,10 +1037,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4626632408630105268, guid: 846ebe05854ce62468c534d28a037e50, type: 3}
-      propertyPath: prefab_donkey
+    - target: {fileID: 633263996490402479, guid: 846ebe05854ce62468c534d28a037e50, type: 3}
+      propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 3627300600005355590, guid: c116be4c0f7931041818feb943b94769, type: 3}
+      objectReference: {fileID: 963194227}
     - target: {fileID: 8537524456530704282, guid: 846ebe05854ce62468c534d28a037e50, type: 3}
       propertyPath: m_Name
       value: HexCell
@@ -1616,7 +1616,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1033288105
 Transform:
   m_ObjectHideFlags: 0
@@ -1666,6 +1666,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingAid: {fileID: 1033288104}
+  buildingAidText: {fileID: 1730690365}
 --- !u!4 &1163894730
 Transform:
   m_ObjectHideFlags: 0
@@ -2536,7 +2537,7 @@ GameObject:
   - component: {fileID: 1730690366}
   - component: {fileID: 1730690365}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2740,7 +2741,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2018339912
 RectTransform:
   m_ObjectHideFlags: 0
