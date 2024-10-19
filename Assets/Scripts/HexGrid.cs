@@ -284,6 +284,10 @@ public class HexGrid : MonoBehaviour {
         HexCell.Building cellBuilding = cell.GetBuilding();
         if (cellBuilding != HexCell.Building.NONE) {
             HexCell.RES_BUILDING_MODIFIERS.TryGetValue((building, cellBuilding), out int value1);
+
+            // For every building inside the building radius a new resource gain preview must be calculated and shown
+            cell.PreviewResourceGain(cellBuilding);
+            GameHandler.game.previewedCells.Add(cell);
             return value1;
         }
 

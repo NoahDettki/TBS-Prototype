@@ -20,6 +20,10 @@ public class GameHandler : MonoBehaviour {
     public HexCell focusedCell;
     [HideInInspector]
     public HexCell.Building building;
+    // A list of cells that preview their resource gain in building mode
+    [HideInInspector]
+    public List<HexCell> previewedCells;
+
     [HideInInspector]
     public int wood, stone, food;
     private int woodGain, stoneGain, foodGain;
@@ -40,6 +44,7 @@ public class GameHandler : MonoBehaviour {
         // Initialize
         State = GameState.MENU;
         building = HexCell.Building.NONE;
+        previewedCells = new List<HexCell>();
         focusedCell = null;
     }
 

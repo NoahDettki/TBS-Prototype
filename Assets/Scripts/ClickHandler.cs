@@ -125,6 +125,7 @@ public class ClickHandler : MonoBehaviour
             if (!buildingAid.activeInHierarchy) buildingAid.SetActive(true);
             // Update building aid position and resource estimation
             if (GameHandler.game.focusedCell != cell) {
+                HideAllBuildingPreviews();
                 buildingAid.transform.parent = cell.go_terrain.transform;
                 buildingAid.transform.position = cell.go_terrain.transform.position;
                 UpdateBuildingAidEstimation(cell);
@@ -158,6 +159,14 @@ public class ClickHandler : MonoBehaviour
         if (GameHandler.game.focusedCell != null) {
             GameHandler.game.focusedCell.LooseFocus();
             GameHandler.game.focusedCell = null;
+            HideAllBuildingPreviews();
+        }
+    }
+
+    private void HideAllBuildingPreviews() {
+        for (int i = GameHandler.game.previewedCells.Count - 1; i >= 0; i--) {
+            GameHandler.game.previewedCells[i].HideBuildingPreview();
+            GameHandler.game.previewedCells.RemoveAt(i);
         }
     }
 }

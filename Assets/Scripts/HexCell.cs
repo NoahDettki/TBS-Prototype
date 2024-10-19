@@ -27,7 +27,7 @@ public class HexCell : MonoBehaviour {
     public Donkey prefab_donkey;
 
     public Type type = Type.MEADOW;
-    private Building building;
+    private Building building, buildingPreview;
     private bool isConstructionFinished;
     private int resourceGain;
     private int resourceRadius;
@@ -40,6 +40,7 @@ public class HexCell : MonoBehaviour {
     private void Awake() {
         animator = GetComponent<Animator>();
         building = Building.NONE;
+        buildingPreview = Building.NONE;
         isConstructionFinished = false;
         resourceGain = 0;
         resourceRadius = 2;
@@ -162,9 +163,12 @@ public class HexCell : MonoBehaviour {
     }
 
     public void PreviewResourceGain(Building b) {
+        if (building == Building.CASTLE) return;
         go_estimation.SetActive(true);
+        buildingPreview = b;
         int preview = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, b, resourceRadius);
         resourceText.SetText(preview.ToString());
+        buildingPreview = Building.NONE;
     }
 
     public void HideResourceGain() {
@@ -234,5 +238,18 @@ public class HexCell : MonoBehaviour {
         // DEBUG
         Destroy(donkey.gameObject);
         donkey = null;
+    }
+
+    public void SetBuildingPreview(Building preview) {
+        buildingPreview = preview;
+    }
+
+    public Building GetBuildingPreview() {
+        return buildingPreview;
+    }
+
+    public void HideBuildingPreview() {
+        SetBuildingPreview(Building.NONE);
+        go_estimation.SetActive(false);
     }
 }
