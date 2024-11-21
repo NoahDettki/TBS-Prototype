@@ -29,6 +29,7 @@ public class HexCell : MonoBehaviour {
     public Type type = Type.MEADOW;
     private Building building, buildingPreview;
     private bool isConstructionFinished;
+    private int estimatedResourceGain;
     private int resourceGain;
     private int resourceRadius;
 
@@ -42,6 +43,7 @@ public class HexCell : MonoBehaviour {
         building = Building.NONE;
         buildingPreview = Building.NONE;
         isConstructionFinished = false;
+        estimatedResourceGain = -1;
         resourceGain = 0;
         resourceRadius = 2;
     }
@@ -146,6 +148,8 @@ public class HexCell : MonoBehaviour {
             donkey = Instantiate<Donkey>(prefab_donkey, path[0].transform.position, Quaternion.LookRotation(donkeyDirection, Vector3.up));
             donkey.SetPath(path);
 
+            resourceGain = estimatedResourceGain;
+
             return true;
         } else return false;
     }
@@ -162,23 +166,14 @@ public class HexCell : MonoBehaviour {
         return true;
     }
 
-    public void PreviewResourceGain(Building b) {
-        if (building == Building.CASTLE) return;
-        go_estimation.SetActive(true);
-        buildingPreview = b;
-        int preview = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, b, resourceRadius);
-        resourceText.SetText(preview.ToString());
-        buildingPreview = Building.NONE;
-    }
-
     public void HideResourceGain() {
         go_estimation.SetActive(false);
     }
 
-    public void UpdateResourceGain() {
-        resourceGain = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, building, resourceRadius);
-        resourceText.SetText(resourceGain.ToString());
-    }
+    //public void UpdateResourceGain() {
+    //    resourceGain = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, building, resourceRadius);
+    //    resourceText.SetText(resourceGain.ToString());
+    //}
 
     public int GetResourceRadius() {
         return resourceRadius;
@@ -240,16 +235,41 @@ public class HexCell : MonoBehaviour {
         donkey = null;
     }
 
-    public void SetBuildingPreview(Building preview) {
-        buildingPreview = preview;
-    }
+    // Previews and estimations --------------------------------------------
 
-    public Building GetBuildingPreview() {
+    //public void SetBuildingPreview(Building preview) {
+    //    buildingPreview = preview;
+    //}
+
+    public Building GetPreviewBuilding() {
         return buildingPreview;
     }
 
-    public void HideBuildingPreview() {
-        SetBuildingPreview(Building.NONE);
+    /// <summary>
+    /// Estimate the resource gain if the given building is placed. This also triggers new estimations
+    /// for all buildings inside this cell's building radius.
+    /// </summary>
+    /// <param name="b">The building that is eventually to be build</param>
+    /// <param name="origin">If true, this cell is the origin of the estimation and will trigger nearby buildings to also estimate</param>
+    public void EstimateResourceGain(Building b, bool origin) {
+        // Castle will never be estimated
+        if (building == Building.CASTLE) return;
+
+        // Caution: This must be called before repeating the CalculateBuildingOutput() function
+        GameHandler.game.estimatedCells.Add(this);
+
+        go_estimation.SetActive(true);
+        buildingPreview = b;
+        estimatedResourceGain = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, b, resourceRadius, origin);
+        resourceText.SetText(estimatedResourceGain.ToString());
+        //buildingPreview = Building.NONE;
+    }
+
+    public void ResetBuildingPreview() {
+        buildingPreview = Building.NONE;
         go_estimation.SetActive(false);
+        // Revert text back to the actual resource gain
+        estimatedResourceGain = -1;
+        resourceText.SetText(resourceGain.ToString());
     }
 }

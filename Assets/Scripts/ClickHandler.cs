@@ -14,6 +14,7 @@ public class ClickHandler : MonoBehaviour
     private Vector3 thisMousePos;
     private Vector3 lastDragPoint;
     private Plane dragPlane;
+    private HexCell lastFrameHoveredCell;
 
     void Awake() {
         cam = Camera.main;
@@ -21,6 +22,7 @@ public class ClickHandler : MonoBehaviour
         rightMouseDown = false;
         mouseDownTimer = 0f;
         dragPlane = new Plane(Vector3.up, Vector3.zero);
+        lastFrameHoveredCell = null;
     }
 
     void Update() {
@@ -60,6 +62,8 @@ public class ClickHandler : MonoBehaviour
         }
         // Build menu
         if (GameHandler.game.building != HexCell.Building.NONE) {
+            // The building aid should not be set every frame if the cell didn't even change
+            // but the logic for that is handled inside SetBuildingAid()
             SetBuildingAid(thisMousePos);
         }
     }
@@ -102,9 +106,18 @@ public class ClickHandler : MonoBehaviour
 
     private void RightDrag(Vector3 dragDirection) {
         // Drags the camera
-        cam.transform.position = new Vector3(cam.transform.position.x - dragDirection.x, cam.transform.position.y, cam.transform.position.z - dragDirection.z);
+        cam.transform.position = new Vector3(
+            cam.transform.position.x - dragDirection.x,
+            cam.transform.position.y,
+            cam.transform.position.z - dragDirection.z
+        );
     }
 
+    /// <summary>
+    /// Uses the given mousePosition to check which cell is hovered over. The building aid is then updated accordingly.
+    /// The building aid will be removed if the mouse is not over a cell or the cell is not valid for the selected building.
+    /// </summary>
+    /// <param name="mousePosition">The position of the mouse cursor</param>
     private void SetBuildingAid(Vector3 mousePosition) {
         Ray ray = cam.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit)) {
@@ -115,6 +128,13 @@ public class ClickHandler : MonoBehaviour
             }
             
             HexCell cell = hit.collider.GetComponentInParent<HexCell>();
+
+            // Don't waste performance on the same cell twice
+            if (cell == lastFrameHoveredCell) {
+                return;
+            }
+            lastFrameHoveredCell = cell;
+
             // Only show building aid on valid cells
             if (!cell.CanBuild(GameHandler.game.building)) {
                 if (buildingAid.activeInHierarchy) RemoveBuildingAid();
@@ -123,19 +143,29 @@ public class ClickHandler : MonoBehaviour
 
             // Show building aid
             if (!buildingAid.activeInHierarchy) buildingAid.SetActive(true);
-            // Update building aid position and resource estimation
-            if (GameHandler.game.focusedCell != cell) {
-                HideAllBuildingPreviews();
-                buildingAid.transform.parent = cell.go_terrain.transform;
-                buildingAid.transform.position = cell.go_terrain.transform.position;
-                UpdateBuildingAidEstimation(cell);
-                if (GameHandler.game.focusedCell != null) {
-                    GameHandler.game.focusedCell.LooseFocus();
-                }
-                GameHandler.game.focusedCell = cell;
-                cell.Focus();
+
+            // At this point we know that a new cell was hovered over this frame!
+
+            // Update cell focus
+            if (GameHandler.game.focusedCell != null) {
+                GameHandler.game.focusedCell.LooseFocus();
             }
-            
+            if (cell != GameHandler.game.focusedCell) {
+                cell.Focus();
+                GameHandler.game.focusedCell = cell;
+            }
+
+            // Before estimating new resource gains, reset all previews
+            ResetAllBuildingPreviews();
+
+            // Set new building aid position
+            buildingAid.transform.parent = cell.go_terrain.transform;
+            buildingAid.transform.position = cell.go_terrain.transform.position;
+
+            // Make a new estimation
+            cell.EstimateResourceGain(GameHandler.game.building, true);
+            //UpdateBuildingAidEstimation(cell);
+
         } else {
             // Nothing was hit with the raycast
             if (buildingAid.activeInHierarchy) RemoveBuildingAid();
@@ -143,10 +173,10 @@ public class ClickHandler : MonoBehaviour
         }
     }
 
-    private void UpdateBuildingAidEstimation(HexCell cell) {
-        cell.PreviewResourceGain(GameHandler.game.building);
-        //buildingAidText.SetText(cell.GetResourceGain() + "");
-    }
+    //private void UpdateBuildingAidEstimation(HexCell cell) {
+    //    cell.EstimateResourceGain(GameHandler.game.building, true);
+    //    //buildingAidText.SetText(cell.GetResourceGain() + "");
+    //}
 
     private void EndBuildingMode() {
         GameHandler.game.building = HexCell.Building.NONE;
@@ -159,14 +189,18 @@ public class ClickHandler : MonoBehaviour
         if (GameHandler.game.focusedCell != null) {
             GameHandler.game.focusedCell.LooseFocus();
             GameHandler.game.focusedCell = null;
-            HideAllBuildingPreviews();
         }
+        ResetAllBuildingPreviews();
     }
 
-    private void HideAllBuildingPreviews() {
-        for (int i = GameHandler.game.previewedCells.Count - 1; i >= 0; i--) {
-            GameHandler.game.previewedCells[i].HideBuildingPreview();
-            GameHandler.game.previewedCells.RemoveAt(i);
+    /// <summary>
+    /// This removes the building aid previews from all cells that were previously estimated.
+    /// </summary>
+    /// <param name="apply">If true, the resource gain estimations will be applied to the cells.</param>
+    private void ResetAllBuildingPreviews() {
+        for (int i = GameHandler.game.estimatedCells.Count - 1; i >= 0; i--) {
+            GameHandler.game.estimatedCells[i].ResetBuildingPreview();
+            GameHandler.game.estimatedCells.RemoveAt(i);
         }
     }
 }

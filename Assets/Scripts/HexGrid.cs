@@ -253,41 +253,48 @@ public class HexGrid : MonoBehaviour {
     /// </summary>
     /// <param name="building">The type of building that generates the r</param>
     /// <param name="radius"></param>
+    /// <param name="origin">if true, triggers additional estimation of neigbouring buildings</param>
     /// <returns></returns>
-    public int CalculateBuildingOutput(int x, int z, HexCell.Building building, int radius) {
+    public int CalculateBuildingOutput(int x, int z, HexCell.Building building, int radius, bool origin) {
         int output = 0;
         for (int ring = 1; ring <= radius; ring++) {
             for (int i = 0; i < ring; i++) {
                 // middle right to down right
-                output += BuildingOutputHelper(building, GetCellAt(x +ring, z - i));
+                output += BuildingOutputHelper(building, GetCellAt(x +ring, z - i), origin);
                 // down right to down left
-                output += BuildingOutputHelper(building, GetCellAt(x + ring - i, z - ring));
+                output += BuildingOutputHelper(building, GetCellAt(x + ring - i, z - ring), origin);
                 // down left to middle left
-                output += BuildingOutputHelper(building, GetCellAt(x - i, z - ring + i));
+                output += BuildingOutputHelper(building, GetCellAt(x - i, z - ring + i), origin);
                 // middle left to top left
-                output += BuildingOutputHelper(building, GetCellAt(x - ring, z + i));
+                output += BuildingOutputHelper(building, GetCellAt(x - ring, z + i), origin);
                 // top left to top right
-                output += BuildingOutputHelper(building, GetCellAt(x - ring + i, z + ring));
+                output += BuildingOutputHelper(building, GetCellAt(x - ring + i, z + ring), origin);
                 // top right to middle right
-                output += BuildingOutputHelper(building, GetCellAt(x + i, z + ring - i));
+                output += BuildingOutputHelper(building, GetCellAt(x + i, z + ring - i), origin);
             }
         }
         return Mathf.Max(output, 0);
     }
 
-    private int BuildingOutputHelper(HexCell.Building building, HexCell cell) {
+    private int BuildingOutputHelper(HexCell.Building building, HexCell cell, bool origin) {
         // No cell means no resource modifier
         if (cell == null) return 0;
 
         // Buildings on top of cells block the gain of resources.
         // That's why building is prioritized above cell type.
         HexCell.Building cellBuilding = cell.GetBuilding();
+        // If there is no building on this cell it could still be the cell with the preview building
+        if (!origin && cellBuilding == HexCell.Building.NONE) {
+            cellBuilding = cell.GetPreviewBuilding();
+        }
         if (cellBuilding != HexCell.Building.NONE) {
             HexCell.RES_BUILDING_MODIFIERS.TryGetValue((building, cellBuilding), out int value1);
 
+            // IF THIS IS THE ORIGIN CELL
             // For every building inside the building radius a new resource gain preview must be calculated and shown
-            cell.PreviewResourceGain(cellBuilding);
-            GameHandler.game.previewedCells.Add(cell);
+            if (origin && !GameHandler.game.estimatedCells.Contains(cell)) {
+                cell.EstimateResourceGain(cellBuilding, false);
+            }
             return value1;
         }
 
