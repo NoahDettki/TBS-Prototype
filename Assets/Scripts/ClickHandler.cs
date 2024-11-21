@@ -98,7 +98,10 @@ public class ClickHandler : MonoBehaviour
                     if (GameHandler.game.building != HexCell.Building.NONE) {
                         cell.Build(GameHandler.game.building);
                         EndBuildingMode();
+                    } else {
+                        cell.ToggleFocus();
                     }
+
                     break;
             }
         }

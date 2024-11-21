@@ -166,10 +166,6 @@ public class HexCell : MonoBehaviour {
         return true;
     }
 
-    public void HideResourceGain() {
-        go_estimation.SetActive(false);
-    }
-
     //public void UpdateResourceGain() {
     //    resourceGain = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, building, resourceRadius);
     //    resourceText.SetText(resourceGain.ToString());
@@ -190,6 +186,20 @@ public class HexCell : MonoBehaviour {
     public void LooseFocus() {
         animator.SetBool("focus", false);
         HideResourceGain();
+    }
+
+    public void ToggleFocus() {
+        if (GameHandler.game.focusedCell != this) {
+            if (GameHandler.game.focusedCell != null) {
+                GameHandler.game.focusedCell.LooseFocus();
+            }
+            GameHandler.game.focusedCell = this;
+            Focus();
+            ShowResourceGain();
+        } else {
+            GameHandler.game.focusedCell = null;
+            LooseFocus();
+        }
     }
 
     public void PlayBuildSound() {
@@ -262,7 +272,6 @@ public class HexCell : MonoBehaviour {
         buildingPreview = b;
         estimatedResourceGain = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, b, resourceRadius, origin);
         resourceText.SetText(estimatedResourceGain.ToString());
-        //buildingPreview = Building.NONE;
     }
 
     public void ResetBuildingPreview() {
@@ -271,5 +280,13 @@ public class HexCell : MonoBehaviour {
         // Revert text back to the actual resource gain
         estimatedResourceGain = -1;
         resourceText.SetText(resourceGain.ToString());
+    }
+
+    public void ShowResourceGain() {
+        go_estimation.SetActive(true);
+    }
+
+    public void HideResourceGain() {
+        go_estimation.SetActive(false);
     }
 }
