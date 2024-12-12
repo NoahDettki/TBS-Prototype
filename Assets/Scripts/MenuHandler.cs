@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class MenuHandler : MonoBehaviour
 {
@@ -35,7 +32,7 @@ public class MenuHandler : MonoBehaviour
     }
 
     public void SelectInBuildMenu(int buildingID) {
-        HexCell.Building building = (HexCell.Building)buildingID;
+        Building.Type building = (Building.Type)buildingID;
         if (building == GameHandler.game.building) return;
 
         GameHandler.game.building = building;

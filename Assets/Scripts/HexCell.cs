@@ -1,20 +1,9 @@
 using System.Collections.Generic;
 using TMPro;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public class HexCell : MonoBehaviour {
     public enum Type { MEADOW, FOREST, MOUNTAINS }
-    public enum Building { NONE, CASTLE, SAWMILL, QUARRY, WINDMILL, GRAIN }
-
-    // These two dictionaries decide how many resources a building generates
-    public static readonly Dictionary<(Building, Building), int> RES_BUILDING_MODIFIERS = new() {
-        { (Building.SAWMILL, Building.SAWMILL), -5 },
-    };
-    public static readonly Dictionary<(Building, Type), int> RES_TYPE_MODIFIERS = new() {
-        { (Building.SAWMILL, Type.FOREST), 1 },
-    };
-
 
     public GameObject prefab_rockyMeadow, prefab_rockyMeadow2,
         prefab_forest, prefab_rockyForest, prefab_lumberForest,
@@ -27,7 +16,7 @@ public class HexCell : MonoBehaviour {
     public Donkey prefab_donkey;
 
     public Type type = Type.MEADOW;
-    private Building building, buildingPreview;
+    private Building.Type building, buildingPreview;
     private bool isConstructionFinished;
     private int estimatedResourceGain;
     private int resourceGain;
@@ -40,8 +29,8 @@ public class HexCell : MonoBehaviour {
 
     private void Awake() {
         animator = GetComponent<Animator>();
-        building = Building.NONE;
-        buildingPreview = Building.NONE;
+        building = Building.Type.NONE;
+        buildingPreview = Building.Type.NONE;
         isConstructionFinished = false;
         estimatedResourceGain = -1;
         resourceGain = 0;
@@ -54,7 +43,7 @@ public class HexCell : MonoBehaviour {
         switch (type) {
             case Type.MEADOW:
                 // Meadows with buildings need no decoration
-                if (building != Building.NONE)
+                if (building != Building.Type.NONE)
                     return;
                 // Meadows at a certain height level can have decorative rocks on them
                 if (heightLevel >= 2) {
@@ -100,12 +89,19 @@ public class HexCell : MonoBehaviour {
         }
     }
 
-    public bool CanBuild(Building b) {
+    public bool CanBuild(Building.Type b) {
         // Can only build on empty cells
-        if (building != Building.NONE) return false;
+        if (building != Building.Type.NONE) return false;
+
+        // Can only build if enough ressources
+        if (Building.Costs[b].lumber > GameHandler.game.GetLumber() ||
+            Building.Costs[b].stone > GameHandler.game.GetStone() ||
+            Building.Costs[b].wheat > GameHandler.game.GetWheat()) {
+            return false;
+        }
 
         switch (b) {
-            case Building.SAWMILL:
+            case Building.Type.SAWMILL:
                 if (type == Type.MOUNTAINS) return false;
                 break;
             default:
@@ -119,14 +115,14 @@ public class HexCell : MonoBehaviour {
     /// </summary>
     /// <param name="b"></param>
     /// <returns>true, if the building was placed. Returns false otherwise</returns>
-    public bool Build(Building b) {
+    public bool Build(Building.Type b) {
         if (CanBuild(b)) {
             // Check if this cell is reachable from the castle
             List<HexCell> path = GameHandler.game.grid.FindPath(this);
             if (path == null) return false;
 
             switch(b) {
-                case Building.SAWMILL:
+                case Building.Type.SAWMILL:
                     Destroy(go_decoration);
                     // Lumbermills in the forest spawn with a few trees around them
                     if (type == Type.FOREST) {
@@ -134,7 +130,7 @@ public class HexCell : MonoBehaviour {
                     }
                     Instantiate<GameObject>(prefab_construction,go_building.transform.position, Quaternion.Euler(0, 0, 0), go_building.transform);
                     break;
-                case Building.QUARRY:
+                case Building.Type.QUARRY:
                     //go_building = Instantiate<GameObject>(prefab_sawmill, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
                     break;
             }
@@ -150,19 +146,25 @@ public class HexCell : MonoBehaviour {
 
             resourceGain = estimatedResourceGain;
 
+            // Pay ressources
+            GameHandler.game.AjustLumber(-Building.Costs[b].lumber);
+            GameHandler.game.AjustStone(-Building.Costs[b].stone);
+            GameHandler.game.AjustWheat(-Building.Costs[b].wheat);
+            GameHandler.game.UpdateRessourceDisplay();
+
             return true;
         } else return false;
     }
 
     public void SetCastle() {
         Instantiate(prefab_castle, go_building.transform.position, Quaternion.identity, go_building.transform);
-        building = Building.CASTLE;
+        building = Building.Type.CASTLE;
         isConstructionFinished = true;
     }
 
     public bool IsTraversable() {
         if (type == Type.MOUNTAINS) return false;
-        if (building != Building.NONE) return false;
+        if (building != Building.Type.NONE) return false;
         return true;
     }
 
@@ -214,7 +216,7 @@ public class HexCell : MonoBehaviour {
         return type;
     }
 
-    public Building GetBuilding() {
+    public Building.Type GetBuilding() {
         return building;
     }
 
@@ -234,7 +236,7 @@ public class HexCell : MonoBehaviour {
             isConstructionFinished = true;
             Destroy(go_building.transform.GetChild(0).gameObject);
             switch (building) {
-                case Building.SAWMILL:
+                case Building.Type.SAWMILL:
                     Instantiate<GameObject>(prefab_sawmill, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
                     break;
             }
@@ -251,7 +253,7 @@ public class HexCell : MonoBehaviour {
     //    buildingPreview = preview;
     //}
 
-    public Building GetPreviewBuilding() {
+    public Building.Type GetPreviewBuilding() {
         return buildingPreview;
     }
 
@@ -261,9 +263,9 @@ public class HexCell : MonoBehaviour {
     /// </summary>
     /// <param name="b">The building that is eventually to be build</param>
     /// <param name="origin">If true, this cell is the origin of the estimation and will trigger nearby buildings to also estimate</param>
-    public void EstimateResourceGain(Building b, bool origin) {
+    public void EstimateResourceGain(Building.Type b, bool origin) {
         // Castle will never be estimated
-        if (building == Building.CASTLE) return;
+        if (building == Building.Type.CASTLE) return;
 
         // Caution: This must be called before repeating the CalculateBuildingOutput() function
         GameHandler.game.estimatedCells.Add(this);
@@ -275,7 +277,7 @@ public class HexCell : MonoBehaviour {
     }
 
     public void ResetBuildingPreview() {
-        buildingPreview = Building.NONE;
+        buildingPreview = Building.Type.NONE;
         go_estimation.SetActive(false);
         // Revert text back to the actual resource gain
         estimatedResourceGain = -1;

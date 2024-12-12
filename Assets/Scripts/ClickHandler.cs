@@ -61,7 +61,7 @@ public class ClickHandler : MonoBehaviour
             mouseDownTimer += Time.deltaTime;
         }
         // Build menu
-        if (GameHandler.game.building != HexCell.Building.NONE) {
+        if (GameHandler.game.building != Building.Type.NONE) {
             // The building aid should not be set every frame if the cell didn't even change
             // but the logic for that is handled inside SetBuildingAid()
             SetBuildingAid(thisMousePos);
@@ -95,7 +95,7 @@ public class ClickHandler : MonoBehaviour
                     HexCell cell = hit.collider.GetComponentInParent<HexCell>();
 
                     // If in building mode, try to build
-                    if (GameHandler.game.building != HexCell.Building.NONE) {
+                    if (GameHandler.game.building != Building.Type.NONE) {
                         cell.Build(GameHandler.game.building);
                         EndBuildingMode();
                     } else {
@@ -182,7 +182,7 @@ public class ClickHandler : MonoBehaviour
     //}
 
     private void EndBuildingMode() {
-        GameHandler.game.building = HexCell.Building.NONE;
+        GameHandler.game.building = Building.Type.NONE;
         EventSystem.current.SetSelectedGameObject(null);
         RemoveBuildingAid();
     }

@@ -255,7 +255,7 @@ public class HexGrid : MonoBehaviour {
     /// <param name="radius"></param>
     /// <param name="origin">if true, triggers additional estimation of neigbouring buildings</param>
     /// <returns></returns>
-    public int CalculateBuildingOutput(int x, int z, HexCell.Building building, int radius, bool origin) {
+    public int CalculateBuildingOutput(int x, int z, Building.Type building, int radius, bool origin) {
         int output = 0;
         for (int ring = 1; ring <= radius; ring++) {
             for (int i = 0; i < ring; i++) {
@@ -276,19 +276,19 @@ public class HexGrid : MonoBehaviour {
         return Mathf.Max(output, 0);
     }
 
-    private int BuildingOutputHelper(HexCell.Building building, HexCell cell, bool origin) {
+    private int BuildingOutputHelper(Building.Type building, HexCell cell, bool origin) {
         // No cell means no resource modifier
         if (cell == null) return 0;
 
         // Buildings on top of cells block the gain of resources.
         // That's why building is prioritized above cell type.
-        HexCell.Building cellBuilding = cell.GetBuilding();
+        Building.Type cellBuilding = cell.GetBuilding();
         // If there is no building on this cell it could still be the cell with the preview building
-        if (!origin && cellBuilding == HexCell.Building.NONE) {
+        if (!origin && cellBuilding == Building.Type.NONE) {
             cellBuilding = cell.GetPreviewBuilding();
         }
-        if (cellBuilding != HexCell.Building.NONE) {
-            HexCell.RES_BUILDING_MODIFIERS.TryGetValue((building, cellBuilding), out int value1);
+        if (cellBuilding != Building.Type.NONE) {
+            Building.RES_BUILDING_MODIFIERS.TryGetValue((building, cellBuilding), out int value1);
 
             // IF THIS IS THE ORIGIN CELL
             // For every building inside the building radius a new resource gain preview must be calculated and shown
@@ -299,7 +299,7 @@ public class HexGrid : MonoBehaviour {
         }
 
         // If the cell has not been built on, the cell type decides the resource gain
-        HexCell.RES_TYPE_MODIFIERS.TryGetValue((building, cell.GetCellType()), out int value2);
+        Building.RES_TYPE_MODIFIERS.TryGetValue((building, cell.GetCellType()), out int value2);
         return value2;
     }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameHandler : MonoBehaviour {
@@ -19,15 +20,22 @@ public class GameHandler : MonoBehaviour {
     [HideInInspector]
     public HexCell focusedCell;
     [HideInInspector]
-    public HexCell.Building building;
+    public Building.Type building;
     // A list of cells that preview their resource gain in building mode
     [HideInInspector]
     public List<HexCell> estimatedCells;
 
-    [HideInInspector]
-    public int wood, stone, food;
-    private int woodGain, stoneGain, foodGain;
+    [Header("Ressources")]
+    public TMP_Text text_lumberCount;
+    public TMP_Text text_stoneCount;
+    public TMP_Text text_wheatCount;
 
+    [SerializeField]
+    private int startLumber, startStone, startWheat;
+    private int lumber, stone, wheat;
+    private int lumberGain, stoneGain, wheatGain;
+
+    [Header("Pathfinding")]
     public bool testPathfinding = false;
     public Vector2 testPathfindingStart;
     public Vector2 testPathfindingEnd;
@@ -43,9 +51,16 @@ public class GameHandler : MonoBehaviour {
         }
         // Initialize
         State = GameState.MENU;
-        building = HexCell.Building.NONE;
+        building = Building.Type.NONE;
         estimatedCells = new List<HexCell>();
         focusedCell = null;
+    }
+
+    public void Start() {
+        lumber = startLumber;
+        stone = startStone;
+        wheat = startWheat;
+        UpdateRessourceDisplay();
     }
 
     private void TestPathfinding() {
@@ -64,7 +79,46 @@ public class GameHandler : MonoBehaviour {
         if (testPathfinding)TestPathfinding();
     }
 
+    public void UpdateRessourceDisplay() {
+        text_lumberCount.text = GameHandler.game.lumber.ToString();
+        text_stoneCount.text = GameHandler.game.stone.ToString();
+        text_wheatCount.text = GameHandler.game.wheat.ToString();
+    }
+
     public void EndRound() {
         grid.EndRound();
+    }
+
+    public int GetLumber() {
+        return lumber;
+    }
+
+    public int GetStone() {
+        return stone;
+    }
+
+    public int GetWheat() {
+        return wheat;
+    }
+
+    public bool AjustLumber(int increase) {
+        if (lumber + increase < 0)
+            return false;
+        lumber += increase;
+        return true;
+    }
+
+    public bool AjustStone(int increase) {
+        if (stone + increase < 0)
+            return false;
+        stone += increase;
+        return true;
+    }
+
+    public bool AjustWheat(int increase) {
+        if (wheat + increase < 0)
+            return false;
+        wheat += increase;
+        return true;
     }
 }
