@@ -5,12 +5,16 @@ using UnityEngine;
 public class Donkey : MonoBehaviour
 {
     private List<HexCell> path;
+    private int pathDir; // either 1 or -1
     private int pathIndex;
     private int cellsPerTurn;
+    private GameHandler.Resources loadType;
+    private int loadAmount;
     private Queue<IEnumerator> moveQueue = new Queue<IEnumerator>();
 
     private void Awake() {
         cellsPerTurn = 2;
+        pathDir = 1;
         pathIndex = 0;
     }
 
@@ -22,20 +26,33 @@ public class Donkey : MonoBehaviour
         this.path = path;
     }
 
+    public void SetLoad(GameHandler.Resources loadType, int loadAmount) {
+        this.loadType = loadType;
+        this.loadAmount = loadAmount;
+    }
+
+    public void SwitchDirection() {
+        pathDir *= -1;
+    }
+
     public void Move() {
         Vector3 pos = transform.position;
         Quaternion rot = transform.rotation;
 
         // Even when the donkey can move futher than one field, moves are handled one after another
         for (int i = 0; i < cellsPerTurn; i++) {
-            pathIndex++;
-            if (pathIndex == path.Count - 1) {
-                // The donkey reached the destination, so the rotation of the donkey does not have to change
-                moveQueue.Enqueue(CellTransition(pos, rot, path[pathIndex].transform.position, rot, 1f/cellsPerTurn, true));
+            pathIndex += pathDir;
+
+            if ((pathDir == 1 && pathIndex == path.Count - 1)
+                || (pathDir == -1 && pathIndex == 0)) {
+                // The donkey reached the destination, so it must rotate 180 degrees
+                Quaternion newRotation = rot * Quaternion.Euler(0, 180, 0);
+                moveQueue.Enqueue(CellTransition(pos, rot, path[pathIndex].transform.position, newRotation, 1f/cellsPerTurn, true));
+                SwitchDirection();
                 break;
             } else {
                 // The donkey has not yet reached the destionation. New Rotation is dependent on further path cells
-                Vector3 newDirection = path[pathIndex + 1].transform.position - path[pathIndex].transform.position;
+                Vector3 newDirection = path[pathIndex + pathDir].transform.position - path[pathIndex].transform.position;
                 newDirection.y = 0;
                 Quaternion newRotation = Quaternion.LookRotation(newDirection, Vector3.up);
                 moveQueue.Enqueue(CellTransition(pos, rot, path[pathIndex].transform.position, newRotation, 1f / cellsPerTurn, false));
@@ -65,7 +82,7 @@ public class Donkey : MonoBehaviour
             yield return null;
         }
         if (isArriving) {
-            path[pathIndex].DonkeyArrived();
+            path[pathIndex].DonkeyArrived(loadType, loadAmount);
         }
     }
 }

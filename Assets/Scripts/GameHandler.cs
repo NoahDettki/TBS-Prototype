@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameHandler : MonoBehaviour {
     // Singleton pattern
@@ -10,6 +11,11 @@ public class GameHandler : MonoBehaviour {
         MENU,
         PREPARING,
         INGAME
+    }
+    public enum Resources {
+        LUMBER,
+        STONE,
+        WHEAT
     }
     public static GameState State { get; private set; }
 
@@ -63,6 +69,12 @@ public class GameHandler : MonoBehaviour {
         UpdateRessourceDisplay();
     }
 
+    public void Update() {
+        if (Keyboard.current[Key.Numpad1].wasPressedThisFrame) AdjustLumber(10);
+        if (Keyboard.current[Key.Numpad2].wasPressedThisFrame) AdjustStone(10);
+        if (Keyboard.current[Key.Numpad3].wasPressedThisFrame) AdjustWheat(10);
+    }
+
     private void TestPathfinding() {
         List<HexCell> path = grid.FindPath(grid.GetCellAt((int)testPathfindingStart.x, (int)testPathfindingStart.y), grid.GetCellAt((int)testPathfindingEnd.x, (int)testPathfindingEnd.y));
         foreach (HexCell cell in path) {
@@ -101,24 +113,27 @@ public class GameHandler : MonoBehaviour {
         return wheat;
     }
 
-    public bool AjustLumber(int increase) {
+    public bool AdjustLumber(int increase) {
         if (lumber + increase < 0)
             return false;
         lumber += increase;
+        UpdateRessourceDisplay();
         return true;
     }
 
-    public bool AjustStone(int increase) {
+    public bool AdjustStone(int increase) {
         if (stone + increase < 0)
             return false;
         stone += increase;
+        UpdateRessourceDisplay();
         return true;
     }
 
-    public bool AjustWheat(int increase) {
+    public bool AdjustWheat(int increase) {
         if (wheat + increase < 0)
             return false;
         wheat += increase;
+        UpdateRessourceDisplay();
         return true;
     }
 }

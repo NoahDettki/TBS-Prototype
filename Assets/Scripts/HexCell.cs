@@ -144,12 +144,14 @@ public class HexCell : MonoBehaviour {
             donkey = Instantiate<Donkey>(prefab_donkey, path[0].transform.position, Quaternion.LookRotation(donkeyDirection, Vector3.up));
             donkey.SetPath(path);
 
-            resourceGain = estimatedResourceGain;
+            foreach (HexCell c in GameHandler.game.estimatedCells) {
+                c.ApplyEstimatedGain();
+            }
 
             // Pay ressources
-            GameHandler.game.AjustLumber(-Building.Costs[b].lumber);
-            GameHandler.game.AjustStone(-Building.Costs[b].stone);
-            GameHandler.game.AjustWheat(-Building.Costs[b].wheat);
+            GameHandler.game.AdjustLumber(-Building.Costs[b].lumber);
+            GameHandler.game.AdjustStone(-Building.Costs[b].stone);
+            GameHandler.game.AdjustWheat(-Building.Costs[b].wheat);
             GameHandler.game.UpdateRessourceDisplay();
 
             return true;
@@ -179,6 +181,10 @@ public class HexCell : MonoBehaviour {
 
     public int GetResourceGain() {
         return resourceGain;
+    }
+
+    public void ApplyEstimatedGain() {
+        resourceGain = estimatedResourceGain;
     }
 
     public void Focus() {
@@ -230,21 +236,43 @@ public class HexCell : MonoBehaviour {
         }
     }
 
-    public void DonkeyArrived() {
-        if (!isConstructionFinished) {
-            // The first arriving donkey finishes construction work
-            isConstructionFinished = true;
-            Destroy(go_building.transform.GetChild(0).gameObject);
-            switch (building) {
-                case Building.Type.SAWMILL:
-                    Instantiate<GameObject>(prefab_sawmill, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
+    public void DonkeyArrived(GameHandler.Resources resourceType, int amount) {
+        if (building == Building.Type.CASTLE) {
+            // Destination: Castle
+            // The castle will always be the drop off point for new resources
+            switch (resourceType) {
+                case GameHandler.Resources.LUMBER:
+                    GameHandler.game.AdjustLumber(amount);
+                    break;
+                case GameHandler.Resources.STONE:
+                    GameHandler.game.AdjustStone(amount);
+                    break;
+                case GameHandler.Resources.WHEAT:
+                    GameHandler.game.AdjustWheat(amount);
                     break;
             }
+        } else {
+            // Destination: Building
+            // Buildings produce resources
+            if (!isConstructionFinished) {
+                // The first arriving donkey finishes construction work
+                isConstructionFinished = true;
+                Destroy(go_building.transform.GetChild(0).gameObject);
+                switch (building) {
+                    case Building.Type.SAWMILL:
+                        Instantiate<GameObject>(prefab_sawmill, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
+                        break;
+                }
+            }
+            // The donkey picks up another load of resources
+            donkey.SetLoad(Building.Products[building], resourceGain);
         }
+        
+        //donkey.SwitchDirection();
 
         // DEBUG
-        Destroy(donkey.gameObject);
-        donkey = null;
+        //Destroy(donkey.gameObject);
+        //donkey = null;
     }
 
     // Previews and estimations --------------------------------------------

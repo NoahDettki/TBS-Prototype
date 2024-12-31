@@ -22,6 +22,13 @@ public static class Building
         { Type.GRAIN, new Cost (0, 0, 1) },
     };
 
+    // This dictionary indicates what building produces what resource
+    public static Dictionary<Type, GameHandler.Resources> Products = new() {
+        { Type.SAWMILL, GameHandler.Resources.LUMBER },
+        { Type.QUARRY, GameHandler.Resources.STONE },
+        { Type.WINDMILL, GameHandler.Resources.WHEAT },
+    };
+
     // These two dictionaries specifies how many resources a building generates
     public static readonly Dictionary<(Type, Type), int> RES_BUILDING_MODIFIERS = new() {
         { (Type.SAWMILL, Type.SAWMILL), -5 },
