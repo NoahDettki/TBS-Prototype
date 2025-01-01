@@ -425,6 +425,7 @@ MonoBehaviour:
   prefab_highMountains: {fileID: 8433579143312780632, guid: fe338bca62b915347a89e53cb0f71d69, type: 3}
   prefab_highMountains2: {fileID: 3140007067401314022, guid: 77cb9e09623222a42898f246a04d136e, type: 3}
   prefab_construction: {fileID: 4456519468674888630, guid: 9e1f4914605f6e84aba48977c39d52ff, type: 3}
+  prefab_quarryPosition: {fileID: 5170695069319391651, guid: 1de88266b99e7c640a9d9cf7c2fdf076, type: 3}
   prefab_acre: {fileID: 1350500039721296137, guid: 4fab8a93b7df5424ca956e2ed6741a68, type: 3}
   prefab_castle: {fileID: 919132149155446097, guid: 484111a4b91a6884a8e9fa59bb5f4662, type: 3}
   prefab_sawmill: {fileID: 7578399405213736551, guid: e00ccd6e4e5ee2244a2f0b8e585b67d3, type: 3}

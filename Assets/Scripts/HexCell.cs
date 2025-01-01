@@ -8,7 +8,7 @@ public class HexCell : MonoBehaviour {
     public GameObject prefab_rockyMeadow, prefab_rockyMeadow2,
         prefab_forest, prefab_rockyForest, prefab_lumberForest,
         prefab_mountains, prefab_mountains2, prefab_highMountains, prefab_highMountains2;
-    public GameObject prefab_construction, prefab_acre, prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
+    public GameObject prefab_construction, prefab_quarryPosition, prefab_acre, prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
     public HexCoordinates coordinates;
     public GameObject go_terrain, go_building, go_estimation;
     public TMP_Text resourceText;
@@ -26,6 +26,7 @@ public class HexCell : MonoBehaviour {
     private GameObject go_decoration;
     private int heightLevel;
     private Donkey donkey;
+    private Quaternion possibleQuarryRotation;
 
     private void Awake() {
         animator = GetComponent<Animator>();
@@ -149,8 +150,9 @@ public class HexCell : MonoBehaviour {
                     Instantiate<GameObject>(prefab_construction,go_building.transform.position, Quaternion.Euler(0, 0, 0), go_building.transform);
                     break;
                 case Building.Type.QUARRY:
-                    Destroy(go_decoration);
-                    //go_building = Instantiate<GameObject>(prefab_sawmill, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
+                    // The quarry should be rotated towards the path that the donkeys will take
+                    possibleQuarryRotation = Quaternion.LookRotation(path[path.Count - 2].transform.position - transform.position, Vector3.up);
+                    Instantiate<GameObject>(prefab_quarryPosition, go_building.transform.position, Quaternion.Euler(0, 0, 0), go_building.transform);
                     break;
                 case Building.Type.WINDMILL:
                     Destroy(go_decoration);
@@ -285,7 +287,8 @@ public class HexCell : MonoBehaviour {
                         Instantiate<GameObject>(prefab_sawmill, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
                         break;
                     case Building.Type.QUARRY:
-                        Instantiate<GameObject>(prefab_quarry, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
+                        Destroy(go_decoration);
+                        Instantiate<GameObject>(prefab_quarry, go_building.transform.position, possibleQuarryRotation, go_building.transform);
                         break;
                     case Building.Type.WINDMILL:
                         Instantiate<GameObject>(prefab_windmill, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);

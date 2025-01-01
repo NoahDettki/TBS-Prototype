@@ -41,8 +41,12 @@ public static class Building
     // These two dictionaries specifies how many resources a building generates
     public static readonly Dictionary<(Type, Type), int> RES_BUILDING_MODIFIERS = new() {
         { (Type.SAWMILL, Type.SAWMILL), -5 },
+        { (Type.WINDMILL, Type.GRAIN), 1 },
+        { (Type.WINDMILL, Type.WINDMILL), -5 },
+        { (Type.QUARRY, Type.QUARRY), -5 },
     };
     public static readonly Dictionary<(Type, HexCell.Type), int> RES_TYPE_MODIFIERS = new() {
         { (Type.SAWMILL, HexCell.Type.FOREST), 1 },
+        { (Type.QUARRY, HexCell.Type.MOUNTAINS), 1 },
     };
 }
