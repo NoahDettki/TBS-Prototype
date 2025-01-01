@@ -8,7 +8,7 @@ public class HexCell : MonoBehaviour {
     public GameObject prefab_rockyMeadow, prefab_rockyMeadow2,
         prefab_forest, prefab_rockyForest, prefab_lumberForest,
         prefab_mountains, prefab_mountains2, prefab_highMountains, prefab_highMountains2;
-    public GameObject prefab_construction, prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
+    public GameObject prefab_construction, prefab_acre, prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
     public HexCoordinates coordinates;
     public GameObject go_terrain, go_building, go_estimation;
     public TMP_Text resourceText;
@@ -104,6 +104,24 @@ public class HexCell : MonoBehaviour {
             case Building.Type.SAWMILL:
                 if (type == Type.MOUNTAINS) return false;
                 break;
+            case Building.Type.QUARRY:
+                if (type != Type.MOUNTAINS) return false;
+                // If the mountain is completely surrounded by other mountains it is not possible to build a quarry there
+                bool accessPossible = false;
+                foreach (HexCell c in GameHandler.game.grid.GetNeighbours(coordinates.X, coordinates.Z)) {
+                    if (c.GetCellType() != Type.MOUNTAINS) {
+                        accessPossible = true;
+                        break;
+                    }
+                }
+                if (!accessPossible) return false;
+                break;
+            case Building.Type.WINDMILL:
+                if (type != Type.MEADOW) return false;
+                break;
+            case Building.Type.GRAIN:
+                if (type != Type.MEADOW) return false;
+                break;
             default:
                 return false;
         }
@@ -131,7 +149,16 @@ public class HexCell : MonoBehaviour {
                     Instantiate<GameObject>(prefab_construction,go_building.transform.position, Quaternion.Euler(0, 0, 0), go_building.transform);
                     break;
                 case Building.Type.QUARRY:
+                    Destroy(go_decoration);
                     //go_building = Instantiate<GameObject>(prefab_sawmill, transform.GetChild(0).position, Quaternion.identity, transform.GetChild(0));
+                    break;
+                case Building.Type.WINDMILL:
+                    Destroy(go_decoration);
+                    Instantiate<GameObject>(prefab_construction, go_building.transform.position, Quaternion.Euler(0, 0, 0), go_building.transform);
+                    break;
+                case Building.Type.GRAIN:
+                    Destroy(go_decoration);
+                    Instantiate<GameObject>(prefab_acre, go_building.transform.position, Quaternion.Euler(0, 0, 0), go_building.transform);
                     break;
             }
             animator.SetTrigger("place");
@@ -166,14 +193,9 @@ public class HexCell : MonoBehaviour {
 
     public bool IsTraversable() {
         if (type == Type.MOUNTAINS) return false;
-        if (building != Building.Type.NONE) return false;
+        if (building != Building.Type.NONE && building != Building.Type.GRAIN) return false;
         return true;
     }
-
-    //public void UpdateResourceGain() {
-    //    resourceGain = GameHandler.game.grid.CalculateBuildingOutput(coordinates.X, coordinates.Z, building, resourceRadius);
-    //    resourceText.SetText(resourceGain.ToString());
-    //}
 
     public int GetResourceRadius() {
         return resourceRadius;
@@ -262,10 +284,24 @@ public class HexCell : MonoBehaviour {
                     case Building.Type.SAWMILL:
                         Instantiate<GameObject>(prefab_sawmill, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
                         break;
+                    case Building.Type.QUARRY:
+                        Instantiate<GameObject>(prefab_quarry, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
+                        break;
+                    case Building.Type.WINDMILL:
+                        Instantiate<GameObject>(prefab_windmill, go_building.transform.position, Quaternion.Euler(0, 180, 0), go_building.transform);
+                        break;
+                    case Building.Type.GRAIN:
+                        Instantiate<GameObject>(prefab_grain, go_building.transform.position, Quaternion.Euler(0, Random.Range(0, 6) * 60, 0), go_building.transform);
+                        // Grain fields do not need their own donkey once grown
+                        Destroy(donkey.gameObject);
+                        donkey = null;
+                        break;
                 }
             }
             // The donkey picks up another load of resources
-            donkey.SetLoad(Building.Products[building], resourceGain);
+            if (donkey != null) {
+                donkey.SetLoad(Building.Products[building], resourceGain);
+            }
         }
         
         //donkey.SwitchDirection();

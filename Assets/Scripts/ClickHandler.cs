@@ -146,6 +146,7 @@ public class ClickHandler : MonoBehaviour
 
             // Show building aid
             if (!buildingAid.activeInHierarchy) buildingAid.SetActive(true);
+            buildingAid.GetComponent<SwitchBuildingPreview>().Switch(GameHandler.game.building);
 
             // At this point we know that a new cell was hovered over this frame!
 
