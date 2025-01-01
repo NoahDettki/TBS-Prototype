@@ -29,6 +29,15 @@ public static class Building
         { Type.WINDMILL, GameHandler.Resources.WHEAT },
     };
 
+    // This dictionary contains the display names of the building types
+    public static Dictionary<Type, string> DisplayNames = new() {
+        { Type.NONE, "Placeholder" },
+        { Type.SAWMILL, "Lumbermill" },
+        { Type.QUARRY, "Quarry" },
+        { Type.WINDMILL, "Windmill" },
+        { Type.GRAIN, "Grain Field" },
+    };
+
     // These two dictionaries specifies how many resources a building generates
     public static readonly Dictionary<(Type, Type), int> RES_BUILDING_MODIFIERS = new() {
         { (Type.SAWMILL, Type.SAWMILL), -5 },

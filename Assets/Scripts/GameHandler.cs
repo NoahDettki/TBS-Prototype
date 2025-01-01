@@ -30,6 +30,8 @@ public class GameHandler : MonoBehaviour {
     // A list of cells that preview their resource gain in building mode
     [HideInInspector]
     public List<HexCell> estimatedCells;
+    [HideInInspector]
+    public List<UIBuilding> uiBuildingOptions;
 
     [Header("Ressources")]
     public TMP_Text text_lumberCount;
@@ -59,6 +61,7 @@ public class GameHandler : MonoBehaviour {
         State = GameState.MENU;
         building = Building.Type.NONE;
         estimatedCells = new List<HexCell>();
+        uiBuildingOptions = new List<UIBuilding>();
         focusedCell = null;
     }
 
@@ -95,6 +98,10 @@ public class GameHandler : MonoBehaviour {
         text_lumberCount.text = GameHandler.game.lumber.ToString();
         text_stoneCount.text = GameHandler.game.stone.ToString();
         text_wheatCount.text = GameHandler.game.wheat.ToString();
+
+        foreach (UIBuilding ui in uiBuildingOptions) {
+            ui.CheckResourceSufficiency();
+        }
     }
 
     public void EndRound() {

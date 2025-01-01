@@ -36,14 +36,6 @@ public class MenuHandler : MonoBehaviour
         #endif
     }
 
-    public void SelectInBuildMenu(int buildingID) {
-        Building.Type building = (Building.Type)buildingID;
-        if (building == GameHandler.game.building) return;
-
-        GameHandler.game.building = building;
-        //print("Player selected " + building);
-    }
-
     public void EndRound() {
         nextRound.GetComponent<Button>().interactable = false;
         StartCoroutine(BlockNextRoundButton());
