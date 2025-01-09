@@ -306,19 +306,9 @@ public class HexCell : MonoBehaviour {
                 donkey.SetLoad(Building.Products[building], resourceGain);
             }
         }
-        
-        //donkey.SwitchDirection();
-
-        // DEBUG
-        //Destroy(donkey.gameObject);
-        //donkey = null;
     }
 
     // Previews and estimations --------------------------------------------
-
-    //public void SetBuildingPreview(Building preview) {
-    //    buildingPreview = preview;
-    //}
 
     public Building.Type GetPreviewBuilding() {
         return buildingPreview;
@@ -331,8 +321,8 @@ public class HexCell : MonoBehaviour {
     /// <param name="b">The building that is eventually to be build</param>
     /// <param name="origin">If true, this cell is the origin of the estimation and will trigger nearby buildings to also estimate</param>
     public void EstimateResourceGain(Building.Type b, bool origin) {
-        // Castle will never be estimated
-        if (building == Building.Type.CASTLE) return;
+        // Castles and Grain will never be estimated
+        if (building == Building.Type.CASTLE || building == Building.Type.GRAIN) return;
 
         // Caution: This must be called before repeating the CalculateBuildingOutput() function
         GameHandler.game.estimatedCells.Add(this);

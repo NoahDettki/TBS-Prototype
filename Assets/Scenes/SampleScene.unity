@@ -2317,9 +2317,9 @@ MonoBehaviour:
   text_lumberCount: {fileID: 1746033194}
   text_stoneCount: {fileID: 401363363}
   text_wheatCount: {fileID: 1198157335}
-  startLumber: 12
-  startStone: 5
-  startWheat: 5
+  startLumber: 15
+  startStone: 7
+  startWheat: 2
   testPathfinding: 0
   testPathfindingStart: {x: -5, y: -5}
   testPathfindingEnd: {x: 5, y: 5}

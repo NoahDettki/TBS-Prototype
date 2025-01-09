@@ -177,11 +177,6 @@ public class ClickHandler : MonoBehaviour
         }
     }
 
-    //private void UpdateBuildingAidEstimation(HexCell cell) {
-    //    cell.EstimateResourceGain(GameHandler.game.building, true);
-    //    //buildingAidText.SetText(cell.GetResourceGain() + "");
-    //}
-
     private void EndBuildingMode() {
         GameHandler.game.building = Building.Type.NONE;
         EventSystem.current.SetSelectedGameObject(null);

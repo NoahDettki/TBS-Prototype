@@ -103,7 +103,7 @@ public class HexGrid : MonoBehaviour {
                 break;
             default:
                 cell = cells[x + ringCount, z + ringCount] = Instantiate<HexCell>(prefab_meadow);
-                // Meadows on a certain height level are rocky (This is just a visual effect
+                // Meadows on a certain height level are rocky (This is just a visual effect)
                 break;
         }
         cell.transform.SetParent(transform, false);

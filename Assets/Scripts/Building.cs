@@ -13,12 +13,14 @@ public static class Building
     }
 
     // This dictionary specifies the costs of different buildings 
+    // The player should be able to build one lumbermill and one quarry before building anything else
+    // Start resources are 15 lumber, 7 stone, 2 wheat
     public static Dictionary<Type, Cost> Costs = new() {
         { Type.NONE, new Cost(0, 0, 0) },
         { Type.CASTLE, new Cost (0, 0, 0) },
-        { Type.SAWMILL, new Cost (5, 4, 0) },
-        { Type.QUARRY, new Cost (7, 0, 0) },
-        { Type.WINDMILL, new Cost (6, 3, 0) },
+        { Type.SAWMILL, new Cost (5, 7, 0) },
+        { Type.QUARRY, new Cost (10, 0, 0) },
+        { Type.WINDMILL, new Cost (6, 8, 0) },
         { Type.GRAIN, new Cost (0, 0, 1) },
     };
 
@@ -43,6 +45,7 @@ public static class Building
         { (Type.SAWMILL, Type.SAWMILL), -5 },
         { (Type.WINDMILL, Type.GRAIN), 1 },
         { (Type.WINDMILL, Type.WINDMILL), -5 },
+        { (Type.QUARRY, Type.SAWMILL), 2 }, // the lumbermill directly supplies the quarry with wood for tools and support beams
         { (Type.QUARRY, Type.QUARRY), -5 },
     };
     public static readonly Dictionary<(Type, HexCell.Type), int> RES_TYPE_MODIFIERS = new() {
