@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public static class Building
 {
-    public enum Type { NONE, CASTLE, SAWMILL, QUARRY, WINDMILL, GRAIN };
+    public enum Type { NONE, CASTLE, SAWMILL, QUARRY, WINDMILL, GRAIN, TOWER };
     public class Cost {
         public readonly int lumber, stone, wheat;
         public Cost(int lumber, int stone, int wheat) {
@@ -22,6 +22,7 @@ public static class Building
         { Type.QUARRY, new Cost (10, 0, 0) },
         { Type.WINDMILL, new Cost (6, 8, 0) },
         { Type.GRAIN, new Cost (0, 0, 1) },
+        { Type.TOWER, new Cost (5, 12, 0) },
     };
 
     // This dictionary indicates what building produces what resource
@@ -38,6 +39,7 @@ public static class Building
         { Type.QUARRY, "Quarry" },
         { Type.WINDMILL, "Windmill" },
         { Type.GRAIN, "Grain Field" },
+        { Type.TOWER, "Tower" },
     };
 
     // These two dictionaries specifies how many resources a building generates

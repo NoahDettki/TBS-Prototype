@@ -8,7 +8,7 @@ public class HexCell : MonoBehaviour {
     public GameObject prefab_rockyMeadow, prefab_rockyMeadow2,
         prefab_forest, prefab_rockyForest, prefab_lumberForest,
         prefab_mountains, prefab_mountains2, prefab_highMountains, prefab_highMountains2;
-    public GameObject prefab_construction, prefab_quarryPosition, prefab_acre, prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain;
+    public GameObject prefab_construction, prefab_quarryPosition, prefab_acre, prefab_castle, prefab_sawmill, prefab_quarry, prefab_windmill, prefab_grain, prefab_tower;
     public HexCoordinates coordinates;
     public GameObject go_terrain, go_building, go_estimation;
     public TMP_Text resourceText;
@@ -123,6 +123,9 @@ public class HexCell : MonoBehaviour {
             case Building.Type.GRAIN:
                 if (type != Type.MEADOW) return false;
                 break;
+            case Building.Type.TOWER:
+                if (type == Type.MOUNTAINS) return false;
+                break;
             default:
                 return false;
         }
@@ -161,6 +164,10 @@ public class HexCell : MonoBehaviour {
                 case Building.Type.GRAIN:
                     Destroy(go_decoration);
                     Instantiate<GameObject>(prefab_acre, go_building.transform.position, Quaternion.Euler(0, 0, 0), go_building.transform);
+                    break;
+                case Building.Type.TOWER:
+                    Destroy(go_decoration);
+                    Instantiate<GameObject>(prefab_construction, go_building.transform.position, Quaternion.Euler(0, 0, 0), go_building.transform);
                     break;
             }
             animator.SetTrigger("place");
@@ -299,6 +306,12 @@ public class HexCell : MonoBehaviour {
                         Destroy(donkey.gameObject);
                         donkey = null;
                         break;
+                    case Building.Type.TOWER:
+                        Instantiate<GameObject>(prefab_tower, go_building.transform.position, Quaternion.Euler(0, Random.Range(0, 6) * 60, 0), go_building.transform);
+                        // Towers do not need their own donkey once built
+                        Destroy(donkey.gameObject);
+                        donkey = null;
+                        break;
                 }
             }
             // The donkey picks up another load of resources
@@ -321,8 +334,8 @@ public class HexCell : MonoBehaviour {
     /// <param name="b">The building that is eventually to be build</param>
     /// <param name="origin">If true, this cell is the origin of the estimation and will trigger nearby buildings to also estimate</param>
     public void EstimateResourceGain(Building.Type b, bool origin) {
-        // Castles and Grain will never be estimated
-        if (building == Building.Type.CASTLE || building == Building.Type.GRAIN) return;
+        // Castles, Towers and Grain will never be estimated
+        if (building == Building.Type.CASTLE || building == Building.Type.GRAIN || building == Building.Type.TOWER) return;
 
         // Caution: This must be called before repeating the CalculateBuildingOutput() function
         GameHandler.game.estimatedCells.Add(this);

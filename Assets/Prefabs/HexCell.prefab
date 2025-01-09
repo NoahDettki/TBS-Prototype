@@ -432,6 +432,7 @@ MonoBehaviour:
   prefab_quarry: {fileID: 919132149155446097, guid: 914bde6a49dc7b94788996918d8c8cb0, type: 3}
   prefab_windmill: {fileID: 8308954811344891351, guid: 770aa51921e33cb4db01ee62eb3d045c, type: 3}
   prefab_grain: {fileID: 919132149155446097, guid: 1c00c16ff6e6aff48b51185fcf1a23dd, type: 3}
+  prefab_tower: {fileID: 587272812501611133, guid: 3053d39bc82640d41bf8f9c47e75386d, type: 3}
   coordinates:
     x: 0
     z: 0
