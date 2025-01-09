@@ -11,6 +11,7 @@ public class Donkey : MonoBehaviour
     private GameHandler.Resources loadType;
     private int loadAmount;
     private Queue<IEnumerator> moveQueue = new Queue<IEnumerator>();
+    private bool leavingAnimation = false;
 
     private void Awake() {
         cellsPerTurn = 2;
@@ -33,6 +34,7 @@ public class Donkey : MonoBehaviour
 
     public void SwitchDirection() {
         pathDir *= -1;
+        leavingAnimation = true;
     }
 
     public void Move() {
@@ -46,8 +48,8 @@ public class Donkey : MonoBehaviour
             if ((pathDir == 1 && pathIndex == path.Count - 1)
                 || (pathDir == -1 && pathIndex == 0)) {
                 // The donkey reached the destination, so it must rotate 180 degrees
-                Quaternion newRotation = rot * Quaternion.Euler(0, 180, 0);
-                moveQueue.Enqueue(CellTransition(pos, rot, path[pathIndex].transform.position, newRotation, 1f/cellsPerTurn, true));
+                //Quaternion newRotation = rot * Quaternion.Euler(0, 180, 0);
+                moveQueue.Enqueue(CellTransition(pos, rot, path[pathIndex].transform.position, rot, 1f/cellsPerTurn, 1));
                 SwitchDirection();
                 break;
             } else {
@@ -55,7 +57,15 @@ public class Donkey : MonoBehaviour
                 Vector3 newDirection = path[pathIndex + pathDir].transform.position - path[pathIndex].transform.position;
                 newDirection.y = 0;
                 Quaternion newRotation = Quaternion.LookRotation(newDirection, Vector3.up);
-                moveQueue.Enqueue(CellTransition(pos, rot, path[pathIndex].transform.position, newRotation, 1f / cellsPerTurn, false));
+                int transitionOptions = 0;
+                // If the donkey reached the destination last move it has to rotate 180 degrees BEFORE making its next move
+                if (leavingAnimation) {
+                    rot *= Quaternion.Euler(0, 180, 0);
+                    transitionOptions = -1;
+                    leavingAnimation = false;
+                }
+
+                moveQueue.Enqueue(CellTransition(pos, rot, path[pathIndex].transform.position, newRotation, 1f / cellsPerTurn, transitionOptions));
 
                 // Update helper position and rotation
                 pos = path[pathIndex].transform.position;
@@ -72,16 +82,32 @@ public class Donkey : MonoBehaviour
         }
     }
 
-    IEnumerator CellTransition(Vector3 p1, Quaternion r1, Vector3 p2, Quaternion r2, float timer, bool isArriving) {
+    /// <summary>
+    /// This transistion is played for every two hex cells the donkey moves between.
+    /// </summary>
+    /// <param name="p1">start position</param>
+    /// <param name="r1">start rotation</param>
+    /// <param name="p2">target position</param>
+    /// <param name="r2">target rotation</param>
+    /// <param name="timer">duration of the transition in seconds</param>
+    /// <param name="isArrivingOrLeaving">wheter this is the transition that is performed from or to a building. -1: leaving, 0: traveling, 1: arriving</param>
+    /// <returns></returns>
+    IEnumerator CellTransition(Vector3 p1, Quaternion r1, Vector3 p2, Quaternion r2, float timer, int isArrivingOrLeaving) {
         float transistionTime = 0f;
         while (transistionTime < timer) {
             if (transistionTime > timer) transistionTime = timer;
-            transform.position = Vector3.Lerp(p1, p2, transistionTime/timer);
-            transform.rotation = Quaternion.Lerp(r1, r2, Mathf.Pow(transistionTime/timer, 4.0f));
+            transform.position = Vector3.Lerp(p1, p2, transistionTime / timer);
+            transform.rotation = Quaternion.Lerp(r1, r2, Mathf.Pow(transistionTime / timer, 4.0f));
+            // When the donkey starts from a building it grows in size
+            if (isArrivingOrLeaving == -1) {
+                transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, transistionTime / timer);
+            } else if (isArrivingOrLeaving == 1) {
+                transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, transistionTime / timer);
+            }
             transistionTime += Time.deltaTime;
             yield return null;
         }
-        if (isArriving) {
+        if (isArrivingOrLeaving == 1) {
             path[pathIndex].DonkeyArrived(loadType, loadAmount);
         }
     }
